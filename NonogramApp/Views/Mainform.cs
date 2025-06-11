@@ -1,3 +1,5 @@
+using NonogramApp.Views;
+
 namespace NonogramApp
 {
     public partial class Form1 : Form
@@ -7,7 +9,50 @@ namespace NonogramApp
             InitializeComponent();
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void title1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // (Optional) Added puzzle logic for the page
+
+            // Redirect to puzzle page
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            // Go to login form
+            this.Hide(); // Hide MainForm
+            Loginform loginForm = new Loginform();
+
+            loginForm.FormClosed += (s, args) => this.Show(); // Show MainForm again when LoginForm closes
+            loginForm.Show();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
         {
 
         }
