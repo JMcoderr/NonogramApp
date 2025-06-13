@@ -34,13 +34,14 @@
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(269, 153);
+            checkBox1.Location = new Point(208, 164);
             checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(83, 19);
+            checkBox1.Size = new Size(82, 19);
             checkBox1.TabIndex = 0;
             checkBox1.Text = "checkBox1";
             checkBox1.UseVisualStyleBackColor = true;
-            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged_1;
+            checkBox1.Click += button1_Click;
             // 
             // Form1
             // 
