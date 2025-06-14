@@ -11,11 +11,16 @@ namespace NonogramApp.Views
         // Basic puzzle settings
         private int gridSize = 10; // 10x10 grid
         private int cellSize = 30; // pixel size of each square
-        private int clueMargin = 70; // space around grid for clues (increased from 50 to 70 to prevent overlap)
+        private int clueMargin = 70; // space around grid for clues
 
         // Cell states: 0 = empty, 1 = filled, 2 = marked with X
         private int[,] cellStates;
         private int[][] solution;
+
+        // Store wrong and correct cells after check to highlight them
+        private HashSet<(int x, int y)> wrongCells = new HashSet<(int x, int y)>();
+        private HashSet<(int x, int y)> correctCells = new HashSet<(int x, int y)>();
+
 
         // Clues to help solve puzzle
         private List<List<int>> rowClues = new List<List<int>>();
@@ -25,11 +30,12 @@ namespace NonogramApp.Views
 
         // Timer to track elapsed time
         private System.Windows.Forms.Timer gameTimer; // this will tick every second
-        private int elapsedSeconds = 0; // keep track of time passed
+        private int elapsedSeconds = 0; // Keep track of time passed
 
         public PuzzleForm()
         {
             InitializeComponent();
+            this.ActiveControl = null; // remove initial focus
 
             // Initialize the grid with empty cells
             cellStates = new int[gridSize, gridSize];
@@ -41,25 +47,25 @@ namespace NonogramApp.Views
                 solution[i] = new int[gridSize];
             }
 
-            // Generate a random solution and corresponding clues
+            // Generate a random solution and clues
             RandomizeSolution();
             GenerateClues();
 
-            // --- Start the timer ---
+            // Start the timer 
             gameTimer = new System.Windows.Forms.Timer();
-            gameTimer.Interval = 1000; // tick every 1 second
-            gameTimer.Tick += GameTimer_Tick; // add event handler
-            gameTimer.Start(); // kick it off
+            gameTimer.Interval = 1000; // Tick every second
+            gameTimer.Tick += GameTimer_Tick; 
+            gameTimer.Start(); 
         }
 
         // Update the timer label every second
         private void GameTimer_Tick(object? sender, EventArgs e)
         {
-            elapsedSeconds++; // add a second
+            elapsedSeconds++; // Add a second
             int minutes = elapsedSeconds / 60;
             int seconds = elapsedSeconds % 60;
 
-            // Update the label with current time - make sure you added lblTimer in your Designer!
+            // Update the label with current time
             lblTimer.Text = $"Time: {minutes:D2}:{seconds:D2}";
         }
 
@@ -67,14 +73,14 @@ namespace NonogramApp.Views
         private void RandomizeSolution()
         {
             Random rand = new Random();
-            // Generate a random solution and corresponding clues
-            solution = new int[gridSize][]; // Ensure 'solution' is initialized
+            // Generate a random solution and clues
+            solution = new int[gridSize][]; // 
             for (int row = 0; row < gridSize; row++)
             {
                 solution[row] = new int[gridSize];
                 for (int col = 0; col < gridSize; col++)
                 {
-                    // Random fill with 30% chance of being filled (1)
+                    // Random fill with 30% chance of being filled 
                     solution[row][col] = (rand.NextDouble() < 0.3) ? 1 : 0;
                 }
             }
@@ -107,7 +113,7 @@ namespace NonogramApp.Views
                     }
                 }
                 if (count > 0) clues.Add(count);
-                if (clues.Count == 0) clues.Add(0); // no filled cells in row
+                if (clues.Count == 0) clues.Add(0); // No filled cells in row
                 rowClues.Add(clues);
             }
 
@@ -132,14 +138,14 @@ namespace NonogramApp.Views
                     }
                 }
                 if (count > 0) clues.Add(count);
-                if (clues.Count == 0) clues.Add(0); // no filled cells in column
+                if (clues.Count == 0) clues.Add(0); // No filled cells in column
                 colClues.Add(clues);
             }
         }
 
         private void PuzzleForm_Load(object sender, EventArgs e)
         {
-            // (Optional) code when the form first loads
+            this.ActiveControl = null;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -159,9 +165,32 @@ namespace NonogramApp.Views
                     // Choose state: solution overlay or player input
                     int state = showSolutionOverlay ? solution[row][col] : cellStates[col, row];
 
+                    // Check if this cell is wrong or correct after check, and highlight colors
+                    if (wrongCells.Contains((col, row)))
+                    {
+                        Rectangle rect = new Rectangle(x, y, cellSize - 1, cellSize - 1);
+                        g.FillRectangle(Brushes.Red, rect);
+                        using (Pen pen = new Pen(Color.DarkRed, 2))
+                        {
+                            g.DrawRectangle(pen, rect);
+                        }
+                        continue; // Skip further drawing this cell
+                    }
+                    else if (correctCells.Contains((col, row)))
+                    {
+                        Rectangle rect = new Rectangle(x, y, cellSize - 1, cellSize - 1);
+                        g.FillRectangle(Brushes.LightGreen, rect);
+                        using (Pen pen = new Pen(Color.Green, 2))
+                        {
+                            g.DrawRectangle(pen, rect);
+                        }
+                        continue; // Skip further drawing this cell
+                    }
+
+
                     if (state == 1)
                     {
-                        // Draw filled cell (black) with white border for better visibility
+                        // Draw filled cell with white border for better visibility
                         Rectangle rect = new Rectangle(x, y, cellSize - 1, cellSize - 1);
                         g.FillRectangle(Brushes.Black, rect);
                         using (Pen whitePen = new Pen(Color.White, 2))
@@ -224,7 +253,7 @@ namespace NonogramApp.Views
                         int x = clueMargin + col * cellSize + 5;
 
                         // Adjust y to start from the top margin, stack clues downwards
-                        int y = clueMargin - (clues.Count - i) * lineHeight - 5; // fixed so clues sit above grid without overlap
+                        int y = clueMargin - (clues.Count - i) * lineHeight - 5; // Fix y position to start above the grid
 
                         g.DrawString(clueStr, this.Font, Brushes.Black, x, y);
                     }
@@ -256,7 +285,7 @@ namespace NonogramApp.Views
                     cellStates[x, y] = (cellStates[x, y] == 2) ? 0 : 2;
                 }
 
-                Invalidate(); // Redraw the form to update visuals
+                Invalidate(); // Redraw the form to show changes
             }
         }
 
@@ -271,14 +300,30 @@ namespace NonogramApp.Views
                 }
             }
 
+            this.ActiveControl = null; // Remove initial focus
+            wrongCells.Clear(); // Clear previous highlights
+            correctCells.Clear(); // Clear correct cells
+            showSolutionOverlay = false; // Zorg dat oplossing niet zichtbaar blijft
             Invalidate(); // Refresh the screen after reset
-            elapsedSeconds = 0; // reset timer too
+            elapsedSeconds = 0; // Reset timer
         }
 
         private void btnCheckSolution_Click(object sender, EventArgs e)
         {
             CheckSolution();
         }
+
+        // Button to clear the red/green mistake highlights but keep player input
+        private void btnHideMistakes_Click(object sender, EventArgs e)
+        {
+            // Clear both sets that highlight mistakes and correct answers
+            wrongCells.Clear();
+            correctCells.Clear();
+
+            // Refresh the screen to remove highlights
+            Invalidate(); // Redraws the form
+        }
+
 
         private async void btnShowSolution_Click(object sender, EventArgs e)
         {
@@ -289,50 +334,68 @@ namespace NonogramApp.Views
             Invalidate(); // Hide overlay and return to player view
         }
 
-        // --- NEW: Hint button click handler ---
+        //  Hint button click handler 
         private void btnHint_Click(object sender, EventArgs e)
         {
-            // Just find the first cell that's part of the solution and not filled yet
+            // Find the first empty cell that should be filled according to the solution
             for (int row = 0; row < gridSize; row++)
             {
                 for (int col = 0; col < gridSize; col++)
                 {
                     if (cellStates[col, row] != 1 && solution[row][col] == 1)
                     {
-                        cellStates[col, row] = 1; // fill that cell as hint
-                        Invalidate(); // redraw to show change
-                        return; // only one hint at a time
+                        cellStates[col, row] = 1; // Fill that cell as hint
+                        Invalidate(); // Redraw to show change
+                        return; // Only one hint at a time
                     }
                 }
             }
-            // If no hints available, tell user
+            // If no hints available tells the user
             MessageBox.Show("No more hints available!", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
         private void CheckSolution()
         {
+            // Clear previous highlights
+            wrongCells.Clear();
+            correctCells.Clear();
+
+            bool hasError = false;
+
             for (int x = 0; x < gridSize; x++)
             {
                 for (int y = 0; y < gridSize; y++)
                 {
-                    // If player filled a cell that should be empty, show warning
                     if (cellStates[x, y] == 1 && solution[y][x] != 1)
                     {
-                        MessageBox.Show("Incorrect: wrong cells are filled.", "Result", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        // This cell is wrongly filled -> mark red
+                        wrongCells.Add((x, y));
+                        hasError = true;
                     }
-
-                    // If player missed a cell that should be filled, show warning
-                    if (cellStates[x, y] != 1 && solution[y][x] == 1)
+                    else if (cellStates[x, y] == 1 && solution[y][x] == 1)
                     {
-                        MessageBox.Show("Incorrect: some filled cells are missing.", "Result", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        // Correctly filled cell -> mark green
+                        correctCells.Add((x, y));
+                    }
+                    else if (cellStates[x, y] != 1 && solution[y][x] == 1)
+                    {
+                        // Cell should be filled but isn't -> mark red
+                        wrongCells.Add((x, y));
+                        hasError = true;
                     }
                 }
             }
 
-            // If no issues found, player solved the puzzle correctly
-            MessageBox.Show("Well done! Puzzle solved correctly!", "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Redraw grid to show highlights
+            Invalidate();
+
+            if (hasError)
+            {
+                MessageBox.Show("There are mistakes in your solution. Check red cells!", "Result", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                MessageBox.Show("Well done! Puzzle solved correctly!", "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

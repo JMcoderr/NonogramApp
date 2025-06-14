@@ -28,30 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            btnReset = new Button();
             btnCheckSolution = new Button();
             btnShowSolution = new Button();
             btnHint = new Button();
             lblTimer = new Label();
+            btnHideMistakes = new Button();
+            btnReset = new Button();
             SuspendLayout();
-            // 
-            // btnReset
-            // 
-            btnReset.Location = new Point(513, 101);
-            btnReset.Margin = new Padding(3, 2, 3, 2);
-            btnReset.Name = "btnReset";
-            btnReset.Size = new Size(82, 22);
-            btnReset.TabIndex = 0;
-            btnReset.Text = "Reset";
-            btnReset.UseVisualStyleBackColor = true;
-            btnReset.Click += btnReset_Click;
             // 
             // btnCheckSolution
             // 
-            btnCheckSolution.Location = new Point(513, 192);
+            btnCheckSolution.Location = new Point(513, 102);
             btnCheckSolution.Margin = new Padding(3, 2, 3, 2);
             btnCheckSolution.Name = "btnCheckSolution";
-            btnCheckSolution.Size = new Size(82, 22);
+            btnCheckSolution.Size = new Size(93, 22);
             btnCheckSolution.TabIndex = 1;
             btnCheckSolution.Text = "Check";
             btnCheckSolution.UseVisualStyleBackColor = true;
@@ -59,7 +49,7 @@
             // 
             // btnShowSolution
             // 
-            btnShowSolution.Location = new Point(513, 241);
+            btnShowSolution.Location = new Point(560, 182);
             btnShowSolution.Name = "btnShowSolution";
             btnShowSolution.Size = new Size(93, 23);
             btnShowSolution.TabIndex = 2;
@@ -69,9 +59,9 @@
             // 
             // btnHint
             // 
-            btnHint.Location = new Point(513, 144);
+            btnHint.Location = new Point(612, 139);
             btnHint.Name = "btnHint";
-            btnHint.Size = new Size(82, 23);
+            btnHint.Size = new Size(90, 23);
             btnHint.TabIndex = 3;
             btnHint.Text = "Hint";
             btnHint.UseVisualStyleBackColor = true;
@@ -80,22 +70,43 @@
             // lblTimer
             // 
             lblTimer.AutoSize = true;
-            lblTimer.Location = new Point(691, 38);
+            lblTimer.Location = new Point(696, 37);
             lblTimer.Name = "lblTimer";
             lblTimer.Size = new Size(67, 15);
             lblTimer.TabIndex = 4;
             lblTimer.Text = "Time: 00:00";
+            // 
+            // btnHideMistakes
+            // 
+            btnHideMistakes.Location = new Point(612, 102);
+            btnHideMistakes.Name = "btnHideMistakes";
+            btnHideMistakes.Size = new Size(90, 23);
+            btnHideMistakes.TabIndex = 5;
+            btnHideMistakes.Text = "Hide Mistakes";
+            btnHideMistakes.UseVisualStyleBackColor = true;
+            btnHideMistakes.Click += btnHideMistakes_Click;
+            // 
+            // btnReset
+            // 
+            btnReset.Location = new Point(513, 139);
+            btnReset.Name = "btnReset";
+            btnReset.Size = new Size(93, 23);
+            btnReset.TabIndex = 6;
+            btnReset.Text = "Reset";
+            btnReset.UseVisualStyleBackColor = true;
+            btnReset.Click += btnReset_Click;
             // 
             // PuzzleForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 451);
+            Controls.Add(btnReset);
+            Controls.Add(btnHideMistakes);
             Controls.Add(lblTimer);
             Controls.Add(btnHint);
             Controls.Add(btnShowSolution);
             Controls.Add(btnCheckSolution);
-            Controls.Add(btnReset);
             Name = "PuzzleForm";
             Text = "PuzzleForm";
             ResumeLayout(false);
@@ -103,11 +114,11 @@
         }
 
         #endregion
-
-        private Button btnReset;
         private Button btnCheckSolution;
         private Button btnShowSolution;
         private Button btnHint;
         private Label lblTimer;
+        private Button btnHideMistakes;
+        private Button btnReset;
     }
 }
