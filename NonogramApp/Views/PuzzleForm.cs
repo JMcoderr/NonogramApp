@@ -23,6 +23,10 @@ namespace NonogramApp.Views
 
         private bool showSolutionOverlay = false;
 
+        // Timer to track elapsed time
+        private System.Windows.Forms.Timer gameTimer; // this will tick every second
+        private int elapsedSeconds = 0; // keep track of time passed
+
         public PuzzleForm()
         {
             InitializeComponent();
@@ -30,7 +34,7 @@ namespace NonogramApp.Views
             // Initialize the grid with empty cells
             cellStates = new int[gridSize, gridSize];
 
-            // Initialize the solution array to avoid nullability issues
+            // Initialize the solution array
             solution = new int[gridSize][];
             for (int i = 0; i < gridSize; i++)
             {
@@ -40,6 +44,23 @@ namespace NonogramApp.Views
             // Generate a random solution and corresponding clues
             RandomizeSolution();
             GenerateClues();
+
+            // --- Start the timer ---
+            gameTimer = new System.Windows.Forms.Timer();
+            gameTimer.Interval = 1000; // tick every 1 second
+            gameTimer.Tick += GameTimer_Tick; // add event handler
+            gameTimer.Start(); // kick it off
+        }
+
+        // Update the timer label every second
+        private void GameTimer_Tick(object? sender, EventArgs e)
+        {
+            elapsedSeconds++; // add a second
+            int minutes = elapsedSeconds / 60;
+            int seconds = elapsedSeconds % 60;
+
+            // Update the label with current time - make sure you added lblTimer in your Designer!
+            lblTimer.Text = $"Time: {minutes:D2}:{seconds:D2}";
         }
 
         // Generate a random puzzle solution grid
@@ -251,6 +272,7 @@ namespace NonogramApp.Views
             }
 
             Invalidate(); // Refresh the screen after reset
+            elapsedSeconds = 0; // reset timer too
         }
 
         private void btnCheckSolution_Click(object sender, EventArgs e)
@@ -265,6 +287,26 @@ namespace NonogramApp.Views
             await Task.Delay(4000); // Wait 4 seconds showing solution
             showSolutionOverlay = false;
             Invalidate(); // Hide overlay and return to player view
+        }
+
+        // --- NEW: Hint button click handler ---
+        private void btnHint_Click(object sender, EventArgs e)
+        {
+            // Just find the first cell that's part of the solution and not filled yet
+            for (int row = 0; row < gridSize; row++)
+            {
+                for (int col = 0; col < gridSize; col++)
+                {
+                    if (cellStates[col, row] != 1 && solution[row][col] == 1)
+                    {
+                        cellStates[col, row] = 1; // fill that cell as hint
+                        Invalidate(); // redraw to show change
+                        return; // only one hint at a time
+                    }
+                }
+            }
+            // If no hints available, tell user
+            MessageBox.Show("No more hints available!", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void CheckSolution()

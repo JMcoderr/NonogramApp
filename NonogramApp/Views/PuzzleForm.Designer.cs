@@ -31,11 +31,13 @@
             btnReset = new Button();
             btnCheckSolution = new Button();
             btnShowSolution = new Button();
+            btnHint = new Button();
+            lblTimer = new Label();
             SuspendLayout();
             // 
             // btnReset
             // 
-            btnReset.Location = new Point(534, 105);
+            btnReset.Location = new Point(513, 101);
             btnReset.Margin = new Padding(3, 2, 3, 2);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(82, 22);
@@ -46,7 +48,7 @@
             // 
             // btnCheckSolution
             // 
-            btnCheckSolution.Location = new Point(534, 152);
+            btnCheckSolution.Location = new Point(513, 192);
             btnCheckSolution.Margin = new Padding(3, 2, 3, 2);
             btnCheckSolution.Name = "btnCheckSolution";
             btnCheckSolution.Size = new Size(82, 22);
@@ -57,7 +59,7 @@
             // 
             // btnShowSolution
             // 
-            btnShowSolution.Location = new Point(534, 206);
+            btnShowSolution.Location = new Point(513, 241);
             btnShowSolution.Name = "btnShowSolution";
             btnShowSolution.Size = new Size(93, 23);
             btnShowSolution.TabIndex = 2;
@@ -65,17 +67,39 @@
             btnShowSolution.UseVisualStyleBackColor = true;
             btnShowSolution.Click += btnShowSolution_Click;
             // 
+            // btnHint
+            // 
+            btnHint.Location = new Point(513, 144);
+            btnHint.Name = "btnHint";
+            btnHint.Size = new Size(82, 23);
+            btnHint.TabIndex = 3;
+            btnHint.Text = "Hint";
+            btnHint.UseVisualStyleBackColor = true;
+            btnHint.Click += btnHint_Click;
+            // 
+            // lblTimer
+            // 
+            lblTimer.AutoSize = true;
+            lblTimer.Location = new Point(691, 38);
+            lblTimer.Name = "lblTimer";
+            lblTimer.Size = new Size(67, 15);
+            lblTimer.TabIndex = 4;
+            lblTimer.Text = "Time: 00:00";
+            // 
             // PuzzleForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 451);
+            Controls.Add(lblTimer);
+            Controls.Add(btnHint);
             Controls.Add(btnShowSolution);
             Controls.Add(btnCheckSolution);
             Controls.Add(btnReset);
             Name = "PuzzleForm";
             Text = "PuzzleForm";
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -83,5 +107,7 @@
         private Button btnReset;
         private Button btnCheckSolution;
         private Button btnShowSolution;
+        private Button btnHint;
+        private Label lblTimer;
     }
 }
