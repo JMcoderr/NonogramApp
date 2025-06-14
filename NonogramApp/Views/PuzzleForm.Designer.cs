@@ -75,7 +75,6 @@
             Controls.Add(btnReset);
             Name = "PuzzleForm";
             Text = "PuzzleForm";
-            Load += PuzzleForm_Load;
             ResumeLayout(false);
         }
 
