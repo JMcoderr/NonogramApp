@@ -38,7 +38,7 @@
             // 
             // btnCheckSolution
             // 
-            btnCheckSolution.Location = new Point(513, 102);
+            btnCheckSolution.Location = new Point(574, 102);
             btnCheckSolution.Margin = new Padding(3, 2, 3, 2);
             btnCheckSolution.Name = "btnCheckSolution";
             btnCheckSolution.Size = new Size(93, 22);
@@ -49,7 +49,7 @@
             // 
             // btnShowSolution
             // 
-            btnShowSolution.Location = new Point(560, 182);
+            btnShowSolution.Location = new Point(618, 182);
             btnShowSolution.Name = "btnShowSolution";
             btnShowSolution.Size = new Size(93, 23);
             btnShowSolution.TabIndex = 2;
@@ -59,7 +59,7 @@
             // 
             // btnHint
             // 
-            btnHint.Location = new Point(612, 139);
+            btnHint.Location = new Point(673, 139);
             btnHint.Name = "btnHint";
             btnHint.Size = new Size(90, 23);
             btnHint.TabIndex = 3;
@@ -70,7 +70,7 @@
             // lblTimer
             // 
             lblTimer.AutoSize = true;
-            lblTimer.Location = new Point(696, 37);
+            lblTimer.Location = new Point(685, 43);
             lblTimer.Name = "lblTimer";
             lblTimer.Size = new Size(67, 15);
             lblTimer.TabIndex = 4;
@@ -78,7 +78,7 @@
             // 
             // btnHideMistakes
             // 
-            btnHideMistakes.Location = new Point(612, 102);
+            btnHideMistakes.Location = new Point(673, 101);
             btnHideMistakes.Name = "btnHideMistakes";
             btnHideMistakes.Size = new Size(90, 23);
             btnHideMistakes.TabIndex = 5;
@@ -88,7 +88,7 @@
             // 
             // btnReset
             // 
-            btnReset.Location = new Point(513, 139);
+            btnReset.Location = new Point(574, 139);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(93, 23);
             btnReset.TabIndex = 6;

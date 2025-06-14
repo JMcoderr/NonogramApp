@@ -28,27 +28,42 @@
         /// </summary>
         private void InitializeComponent()
         {
-            checkBox1 = new CheckBox();
+            btnStartPuzzle = new CheckBox();
+            cmbDifficulty = new ComboBox();
             SuspendLayout();
             // 
-            // checkBox1
+            // btnStartPuzzle
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(208, 164);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(82, 19);
-            checkBox1.TabIndex = 0;
-            checkBox1.Text = "checkBox1";
-            checkBox1.UseVisualStyleBackColor = true;
-            checkBox1.CheckedChanged += checkBox1_CheckedChanged_1;
-            checkBox1.Click += button1_Click;
+            btnStartPuzzle.AutoSize = true;
+            btnStartPuzzle.Location = new Point(333, 173);
+            btnStartPuzzle.Name = "btnStartPuzzle";
+            btnStartPuzzle.Size = new Size(86, 19);
+            btnStartPuzzle.TabIndex = 0;
+            btnStartPuzzle.Text = "Start Puzzle";
+            btnStartPuzzle.UseVisualStyleBackColor = true;
+
+            // Verwijder deze regel, want Button heeft geen CheckedChanged event
+            // btnStartPuzzle.CheckedChanged += checkBox1_CheckedChanged_1;
+
+            // Voeg hier de juiste Click event handler toe
+            btnStartPuzzle.Click += btnStartPuzzle_Click;
+            
+            // cmbDifficulty
+            cmbDifficulty.FormattingEnabled = true;
+            cmbDifficulty.Items.AddRange(new object[] { "Easy (5x5)", "Medium (10x10)", "Hard (15x15)" });
+            cmbDifficulty.Location = new Point(315, 116);
+            cmbDifficulty.Name = "cmbDifficulty";
+            cmbDifficulty.Size = new Size(121, 23);
+            cmbDifficulty.TabIndex = 1;
+            cmbDifficulty.SelectedIndexChanged += cmbDifficulty_SelectedIndexChanged;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(checkBox1);
+            Controls.Add(cmbDifficulty);
+            Controls.Add(btnStartPuzzle);
             Name = "Form1";
             Text = "Form1";
             ResumeLayout(false);
@@ -57,6 +72,7 @@
 
         #endregion
 
-        private CheckBox checkBox1;
+        private CheckBox btnStartPuzzle;
+        private ComboBox cmbDifficulty;
     }
 }

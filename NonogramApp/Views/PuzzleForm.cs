@@ -9,7 +9,7 @@ namespace NonogramApp.Views
     public partial class PuzzleForm : Form
     {
         // Basic puzzle settings
-        private int gridSize = 10; // 10x10 grid
+        private int gridSize; // Size of the grid (e.g. 5x5, 10x10)
         private int cellSize = 30; // pixel size of each square
         private int clueMargin = 70; // space around grid for clues
 
@@ -32,12 +32,28 @@ namespace NonogramApp.Views
         private System.Windows.Forms.Timer gameTimer; // this will tick every second
         private int elapsedSeconds = 0; // Keep track of time passed
 
-        public PuzzleForm()
+
+
+        public PuzzleForm(int gridSize)
         {
             InitializeComponent();
+            // Zet de begin grootte op basis van gridSize
+            if (gridSize == 5)
+            {
+                this.ClientSize = new Size(850, 500);
+            }
+            else if (gridSize == 10)
+            {
+                this.ClientSize = new Size(850, 650);
+            }
+            else if (gridSize == 15)
+            {
+                this.ClientSize = new Size(1100, 650);
+            }
+            this.gridSize = gridSize;
             this.ActiveControl = null; // remove initial focus
 
-            // Initialize the grid with empty cells
+            // Initialize the cellStates array to avoid nullability issues
             cellStates = new int[gridSize, gridSize];
 
             // Initialize the solution array
@@ -54,8 +70,8 @@ namespace NonogramApp.Views
             // Start the timer 
             gameTimer = new System.Windows.Forms.Timer();
             gameTimer.Interval = 1000; // Tick every second
-            gameTimer.Tick += GameTimer_Tick; 
-            gameTimer.Start(); 
+            gameTimer.Tick += GameTimer_Tick;
+            gameTimer.Start();
         }
 
         // Update the timer label every second
@@ -300,7 +316,6 @@ namespace NonogramApp.Views
                 }
             }
 
-            this.ActiveControl = null; // Remove initial focus
             wrongCells.Clear(); // Clear previous highlights
             correctCells.Clear(); // Clear correct cells
             showSolutionOverlay = false; // Zorg dat oplossing niet zichtbaar blijft
