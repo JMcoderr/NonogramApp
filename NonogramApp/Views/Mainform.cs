@@ -12,14 +12,14 @@ namespace NonogramApp
         {
             InitializeComponent();
 
-            // Voeg opties toe aan de combobox
+            // Add options to the combobox
             cmbDifficulty.Items.Clear();
             cmbDifficulty.Items.Add("Easy (5x5)");
             cmbDifficulty.Items.Add("Medium (10x10)");
             cmbDifficulty.Items.Add("Hard (15x15)");
 
-            // Zet standaard geselecteerde index
-            cmbDifficulty.SelectedIndex = 1; // Medium als standaard
+            // Set default selected index
+            cmbDifficulty.SelectedIndex = 1; // Medium as default
         }
 
         private void btnStartPuzzle_Click(object sender, EventArgs e)
@@ -35,14 +35,14 @@ namespace NonogramApp
             else
                 selectedGridSize = 10; // fallback
 
-            // Maak nieuw PuzzleForm aan met geselecteerde grid size en toon deze
+            // Create a new PuzzleForm with the selected grid size and show it
             PuzzleForm puzzleForm = new PuzzleForm(selectedGridSize);
             puzzleForm.Show();
         }
 
         private void cmbDifficulty_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Optioneel: iets doen als de gebruiker een andere moeilijkheid kiest
+            // Optional: do something when the user selects a different difficulty
         }
     }
 }
