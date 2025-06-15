@@ -35,23 +35,19 @@
             // btnStartPuzzle
             // 
             btnStartPuzzle.AutoSize = true;
-            btnStartPuzzle.Location = new Point(333, 173);
+            btnStartPuzzle.Location = new Point(346, 153);
             btnStartPuzzle.Name = "btnStartPuzzle";
             btnStartPuzzle.Size = new Size(86, 19);
             btnStartPuzzle.TabIndex = 0;
             btnStartPuzzle.Text = "Start Puzzle";
             btnStartPuzzle.UseVisualStyleBackColor = true;
-
-            // Verwijder deze regel, want Button heeft geen CheckedChanged event
-            // btnStartPuzzle.CheckedChanged += checkBox1_CheckedChanged_1;
-
-            // Voeg hier de juiste Click event handler toe
             btnStartPuzzle.Click += btnStartPuzzle_Click;
-            
+            // 
             // cmbDifficulty
+            // 
             cmbDifficulty.FormattingEnabled = true;
             cmbDifficulty.Items.AddRange(new object[] { "Easy (5x5)", "Medium (10x10)", "Hard (15x15)" });
-            cmbDifficulty.Location = new Point(315, 116);
+            cmbDifficulty.Location = new Point(333, 178);
             cmbDifficulty.Name = "cmbDifficulty";
             cmbDifficulty.Size = new Size(121, 23);
             cmbDifficulty.TabIndex = 1;

@@ -29,26 +29,31 @@ namespace NonogramApp.Views
         private bool showSolutionOverlay = false;
 
         // Timer to track elapsed time
+        private int score = 0; // Score tracking
         private System.Windows.Forms.Timer gameTimer; // this will tick every second
         private int elapsedSeconds = 0; // Keep track of time passed
 
+        // Settings toggles for game behavior
+        private bool showMistakes = true;
+        private bool enableScore = true;
+        private bool allowHints = true;
 
-
+        // Constructor to initialize the puzzle form with a specific grid size
         public PuzzleForm(int gridSize)
         {
             InitializeComponent();
-            // Zet de begin grootte op basis van gridSize
+            // Sets begin size of the form based on grid size
             if (gridSize == 5)
             {
                 this.ClientSize = new Size(850, 500);
             }
             else if (gridSize == 10)
             {
-                this.ClientSize = new Size(850, 650);
+                this.ClientSize = new Size(850, 500);
             }
             else if (gridSize == 15)
             {
-                this.ClientSize = new Size(1100, 650);
+                this.ClientSize = new Size(850, 650);
             }
             this.gridSize = gridSize;
             this.ActiveControl = null; // remove initial focus
@@ -292,9 +297,18 @@ namespace NonogramApp.Views
             {
                 if (e.Button == MouseButtons.Left)
                 {
+                    // Check if the clicked cell matches the solution and was not already correct
+                    if (cellStates[x, y] != 1 && solution[y][x] == 1)
+                    {
+                        // Award points based on speed: max 100 points per cell decays over time
+                        int timeFactor = Math.Max(1, 100 - elapsedSeconds);
+                        score += timeFactor;
+                        lblScore.Text = $"Score: {score}";
+                    }
                     // Left click toggles between empty and filled
                     cellStates[x, y] = (cellStates[x, y] == 1) ? 0 : 1;
                 }
+
                 else if (e.Button == MouseButtons.Right)
                 {
                     // Right click toggles X mark
@@ -318,9 +332,11 @@ namespace NonogramApp.Views
 
             wrongCells.Clear(); // Clear previous highlights
             correctCells.Clear(); // Clear correct cells
-            showSolutionOverlay = false; // Zorg dat oplossing niet zichtbaar blijft
+            showSolutionOverlay = false; // Show solution overlay off
             Invalidate(); // Refresh the screen after reset
             elapsedSeconds = 0; // Reset timer
+            score = 0;
+            lblScore.Text = "Score: 0"; // Reset score display
         }
 
         private void btnCheckSolution_Click(object sender, EventArgs e)
@@ -359,7 +375,8 @@ namespace NonogramApp.Views
                 {
                     if (cellStates[col, row] != 1 && solution[row][col] == 1)
                     {
-                        cellStates[col, row] = 1; // Fill that cell as hint
+                        cellStates[col, row] = 1; // Fill that cell as hint (no score added)
+
                         Invalidate(); // Redraw to show change
                         return; // Only one hint at a time
                     }
@@ -409,8 +426,13 @@ namespace NonogramApp.Views
             }
             else
             {
-                MessageBox.Show("Well done! Puzzle solved correctly!", "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Well done! Puzzle solved correctly!\nFinal Score: {score}", "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void lblTimer_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
