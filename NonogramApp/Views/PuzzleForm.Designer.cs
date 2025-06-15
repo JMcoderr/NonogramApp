@@ -4,6 +4,7 @@
     {
         private System.ComponentModel.IContainer components = null;
 
+        // This cleans up any resources being used.
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -15,6 +16,7 @@
 
         #region Windows Form Designer generated code
 
+        // This method sets up all the controls and layout for the form.
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
@@ -34,7 +36,8 @@
 
             SuspendLayout();
 
-            // --- Main Form ---
+            //  Main Form settings 
+            // Sets the size, background color, and other main properties of the window.
             this.AutoScaleDimensions = new SizeF(8F, 20F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(245, 247, 250);
@@ -44,13 +47,15 @@
             this.Text = "Nonogram Puzzle";
             this.Load += PuzzleForm_Load_1;
 
-            // --- Right Panel (for controls) ---
+            // -Right panel 
+            // This panel holds all the controls (buttons, labels, etc.) on the right side.
             rightPanel.BackColor = Color.FromArgb(235, 238, 245);
             rightPanel.Location = new Point(820, 0);
             rightPanel.Size = new Size(180, 700);
             rightPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
 
-            // --- Timer Label ---
+            // Timer label
+            // Shows the elapsed time.
             lblTimer.Font = new Font("Segoe UI", 13F, FontStyle.Bold, GraphicsUnit.Point);
             lblTimer.ForeColor = Color.FromArgb(60, 60, 60);
             lblTimer.Location = new Point(20, 30);
@@ -59,7 +64,8 @@
             lblTimer.Click += lblTimer_Click;
             lblTimer.TextAlign = ContentAlignment.MiddleLeft;
 
-            // --- Score Label ---
+            // Score label 
+            // Shows the current score.
             lblScore.Font = new Font("Segoe UI", 13F, FontStyle.Bold, GraphicsUnit.Point);
             lblScore.ForeColor = Color.FromArgb(60, 60, 60);
             lblScore.Location = new Point(20, 70);
@@ -67,7 +73,8 @@
             lblScore.Text = "Score: 0";
             lblScore.TextAlign = ContentAlignment.MiddleLeft;
 
-            // --- Hints Used Label ---
+            // Hints used label 
+            // Shows how many hints the player has used.
             lblHintsUsed.Font = new Font("Segoe UI", 10F, FontStyle.Italic, GraphicsUnit.Point);
             lblHintsUsed.ForeColor = Color.FromArgb(120, 120, 120);
             lblHintsUsed.Location = new Point(20, 110);
@@ -75,7 +82,8 @@
             lblHintsUsed.Text = "Hints used: 0";
             lblHintsUsed.TextAlign = ContentAlignment.MiddleLeft;
 
-            // --- Settings Button ---
+            // Settings button
+            // Opens the settings panel.
             btnSettings.FlatStyle = FlatStyle.Flat;
             btnSettings.FlatAppearance.BorderSize = 0;
             btnSettings.BackColor = Color.FromArgb(230, 230, 240);
@@ -87,7 +95,8 @@
             btnSettings.TabIndex = 8;
             btnSettings.Click += BtnSettings_Click;
 
-            // --- Settings Panel (Dropdown) ---
+            // Settings panel
+            // This panel pops up when you click the settings button.
             settingsPanel.BackColor = Color.White;
             settingsPanel.BorderStyle = BorderStyle.FixedSingle;
             settingsPanel.Location = new Point(10, 190);
@@ -95,7 +104,8 @@
             settingsPanel.Visible = false;
             settingsPanel.Padding = new Padding(10);
 
-            // --- Settings Checkboxes ---
+            // Score checkbox
+            // Lets the user turn scoring on or off.
             chkEnableScore.Text = "Enable Score";
             chkEnableScore.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             chkEnableScore.Location = new Point(20, 15);
@@ -103,6 +113,8 @@
             chkEnableScore.Checked = false;
             chkEnableScore.Enabled = false;
 
+            // Hints checkbox
+            // Lets the user turn hints on or off.
             chkAllowHints.Text = "Allow Hints";
             chkAllowHints.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             chkAllowHints.Location = new Point(20, 55);
@@ -110,13 +122,16 @@
             chkAllowHints.Checked = false;
             chkAllowHints.Enabled = false;
 
+            // Add checkboxes to the settings panel
             settingsPanel.Controls.Add(chkEnableScore);
             settingsPanel.Controls.Add(chkAllowHints);
 
-            // --- Main Action Buttons ---
-            int buttonStartY = 350; // Lowered for more space below settings
+            // Main action buttons
+            // These buttons let the user interact with the puzzle 
+            int buttonStartY = 350; // Start lower so settings panel has space
             int buttonSpacing = 55;
 
+            // Check solution button
             btnCheckSolution.BackColor = Color.FromArgb(80, 180, 120);
             btnCheckSolution.FlatStyle = FlatStyle.Flat;
             btnCheckSolution.FlatAppearance.BorderSize = 0;
@@ -128,6 +143,7 @@
             btnCheckSolution.TabIndex = 1;
             btnCheckSolution.Click += btnCheckSolution_Click;
 
+            // Show solution button
             btnShowSolution.BackColor = Color.FromArgb(80, 120, 200);
             btnShowSolution.FlatStyle = FlatStyle.Flat;
             btnShowSolution.FlatAppearance.BorderSize = 0;
@@ -139,6 +155,7 @@
             btnShowSolution.TabIndex = 2;
             btnShowSolution.Click += btnShowSolution_Click;
 
+            // Hint button
             btnHint.BackColor = Color.FromArgb(240, 180, 60);
             btnHint.FlatStyle = FlatStyle.Flat;
             btnHint.FlatAppearance.BorderSize = 0;
@@ -151,6 +168,7 @@
             btnHint.Click += btnHint_Click;
             btnHint.Enabled = false;
 
+            // Hide mistakes button
             btnHideMistakes.BackColor = Color.FromArgb(220, 80, 80);
             btnHideMistakes.FlatStyle = FlatStyle.Flat;
             btnHideMistakes.FlatAppearance.BorderSize = 0;
@@ -162,6 +180,7 @@
             btnHideMistakes.TabIndex = 5;
             btnHideMistakes.Click += btnHideMistakes_Click;
 
+            // Reset button
             btnReset.BackColor = Color.FromArgb(120, 120, 120);
             btnReset.FlatStyle = FlatStyle.Flat;
             btnReset.FlatAppearance.BorderSize = 0;
@@ -173,7 +192,7 @@
             btnReset.TabIndex = 6;
             btnReset.Click += btnReset_Click;
 
-            // --- Add controls to right panel ---
+            // Add everything to the right panel
             rightPanel.Controls.Add(lblTimer);
             rightPanel.Controls.Add(lblScore);
             rightPanel.Controls.Add(lblHintsUsed);
@@ -185,7 +204,7 @@
             rightPanel.Controls.Add(btnHideMistakes);
             rightPanel.Controls.Add(btnReset);
 
-            // --- Add panels to form ---
+            // Add the right panel to the form
             Controls.Add(rightPanel);
 
             ResumeLayout(false);
@@ -194,6 +213,7 @@
 
         #endregion
 
+        // These are all the controls used in the form.
         private Button btnCheckSolution;
         private Button btnShowSolution;
         private Button btnHint;

@@ -5,32 +5,43 @@ using System.Windows.Forms;
 
 namespace NonogramApp.Views
 {
+    // This is the main window for the Nonogram puzzle game.
+    // It handles the grid, clues, user input, scoring, and all the game logic.
     public partial class PuzzleForm : Form
     {
-        private int gridSize;
-        private int cellSize;
-        private int clueMargin;
-        private int[,] cellStates;
-        private int[][] solution;
-        private HashSet<(int x, int y)> wrongCells = new();
-        private HashSet<(int x, int y)> correctCells = new();
-        private HashSet<(int x, int y)> hintedCells = new(); // Track cells filled by hint
-        private List<List<int>> rowClues = new();
-        private List<List<int>> colClues = new();
-        private bool showSolutionOverlay = false;
-        private int score = 0;
-        private System.Windows.Forms.Timer gameTimer;
-        private int elapsedSeconds = 0;
-        private bool scoreEnabled = false;
-        private bool hintsEnabled = false;
-        private int selectedRow = -1;
-        private int selectedCol = -1;
-        private int hintsUsed = 0;
+        // --- Puzzle data ---
+        private int gridSize; // How many rows/columns the puzzle has
+        private int cellSize; // Size of each cell in pixels
+        private int clueMargin; // Space for clues on the top/left
+        private int[,] cellStates; // Stores the state of each cell: 0 = empty, 1 = filled, 2 = X
+        private int[][] solution; // The correct answer for the puzzle
 
+        // --- Tracking cell status ---
+        private HashSet<(int x, int y)> wrongCells = new();   // Cells the user filled wrong
+        private HashSet<(int x, int y)> correctCells = new(); // Cells the user filled right
+        private HashSet<(int x, int y)> hintedCells = new();  // Cells filled by using a hint
+
+        // --- Clues for the puzzle ---
+        private List<List<int>> rowClues = new(); // Clues for each row
+        private List<List<int>> colClues = new(); // Clues for each column
+
+        // --- Game state ---
+        private bool showSolutionOverlay = false; // If true, show the solution on top of the grid
+        private int score = 0;                    // The player's score
+        private System.Windows.Forms.Timer gameTimer; // Timer for tracking how long the player takes
+        private int elapsedSeconds = 0;           // How many seconds have passed
+        private bool scoreEnabled = false;        // If true, scoring is turned on
+        private bool hintsEnabled = false;        // If true, hints are allowed
+        private int selectedRow = -1;             // For keyboard navigation: which row is selected
+        private int selectedCol = -1;             // For keyboard navigation: which column is selected
+        private int hintsUsed = 0;                // How many hints the player has used
+
+        // --- Constructor: sets up the form and puzzle ---
         public PuzzleForm(int gridSize)
         {
             InitializeComponent();
 
+            // Enable double buffering for smooth drawing (no flicker)
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
             InitializeSettingsPanelLogic();
@@ -41,6 +52,7 @@ namespace NonogramApp.Views
             for (int i = 0; i < gridSize; i++)
                 solution[i] = new int[gridSize];
 
+            // Set the window size based on the puzzle size
             if (gridSize == 5)
                 this.ClientSize = new Size(1000, 600);
             else if (gridSize == 10)
@@ -51,24 +63,29 @@ namespace NonogramApp.Views
                 this.ClientSize = new Size(1000, 700);
 
             this.MinimumSize = new Size(900, 600);
-            this.ActiveControl = null;
+            this.ActiveControl = null; // No control is focused at start
 
+            // Calculate cell sizes and margins, then make a new puzzle
             CalculateResponsiveSizes();
             RandomizeSolution();
             GenerateClues();
 
+            // Set up the timer for the game
             gameTimer = new System.Windows.Forms.Timer();
-            gameTimer.Interval = 1000;
+            gameTimer.Interval = 1000; // 1 second
             gameTimer.Tick += GameTimer_Tick;
             gameTimer.Start();
 
+            // Handle resizing and keyboard input
             this.Resize += PuzzleForm_Resize;
             this.KeyPreview = true;
             this.KeyDown += PuzzleForm_KeyDown;
+
+            // Set up tooltips and button hover effects for better UX
             SetToolTips();
             AddButtonHoverEffects();
 
-            // Make checkboxes unchecked and enabled by default
+            // By default, scoring and hints are off, but user can enable them
             chkEnableScore.Checked = false;
             chkEnableScore.Enabled = true;
             chkAllowHints.Checked = false;
@@ -78,6 +95,7 @@ namespace NonogramApp.Views
             btnHint.Enabled = false;
         }
 
+        // Adds tooltips to the buttons so the user knows what they do
         private void SetToolTips()
         {
             ToolTip tip = new();
@@ -89,6 +107,7 @@ namespace NonogramApp.Views
             tip.SetToolTip(btnHideMistakes, "Hide mistake highlights");
         }
 
+        // Adds a light color effect when you hover over buttons
         private void AddButtonHoverEffects()
         {
             foreach (var btn in new[] { btnCheckSolution, btnShowSolution, btnHint, btnHideMistakes, btnReset, btnSettings })
@@ -98,6 +117,7 @@ namespace NonogramApp.Views
             }
         }
 
+        // Returns the original color for each button (used when mouse leaves)
         private Color GetButtonBaseColor(Button btn)
         {
             if (btn == btnCheckSolution) return Color.FromArgb(80, 180, 120);
@@ -109,9 +129,10 @@ namespace NonogramApp.Views
             return btn.BackColor;
         }
 
+        // Handles the logic for the settings panel checkboxes
         private void InitializeSettingsPanelLogic()
         {
-            // Enable Score checkbox logic
+            // When the score checkbox is changed, update the scoreEnabled flag and label
             chkEnableScore.CheckedChanged += (s, e) =>
             {
                 scoreEnabled = chkEnableScore.Checked;
@@ -121,12 +142,11 @@ namespace NonogramApp.Views
                 }
                 else
                 {
-                    // Show current score if enabled
                     lblScore.Text = $"Score: {score}";
                 }
             };
 
-            // Allow Hints checkbox logic
+            // When the hints checkbox is changed, enable or disable the hint button
             chkAllowHints.CheckedChanged += (s, e) =>
             {
                 hintsEnabled = chkAllowHints.Checked;
@@ -134,9 +154,10 @@ namespace NonogramApp.Views
             };
         }
 
+        // Calculates the size of each cell and the margin for clues, based on the window size
         private void CalculateResponsiveSizes()
         {
-            int availableWidth = this.ClientSize.Width - 180;
+            int availableWidth = this.ClientSize.Width - 180; // 180 is the right panel
             int availableHeight = this.ClientSize.Height;
             clueMargin = Math.Clamp(gridSize * 5 + 60, 60, 140);
             int maxCellWidth = (availableWidth - clueMargin - 20) / gridSize;
@@ -144,20 +165,23 @@ namespace NonogramApp.Views
             cellSize = Math.Max(18, Math.Min(maxCellWidth, maxCellHeight));
         }
 
+        // When the window is resized, recalculate everything and redraw
         private void PuzzleForm_Resize(object? sender, EventArgs e)
         {
             CalculateResponsiveSizes();
             Invalidate();
         }
 
+        // Called every second by the timer, updates the time label
         private void GameTimer_Tick(object? sender, EventArgs e)
         {
-            elapsedSeconds++; // Timer always runs
+            elapsedSeconds++;
             int minutes = elapsedSeconds / 60;
             int seconds = elapsedSeconds % 60;
             lblTimer.Text = $"Time: {minutes:D2}:{seconds:D2}";
         }
 
+        // Makes a random solution for the puzzle (about 30% of cells are filled)
         private void RandomizeSolution()
         {
             Random rand = new();
@@ -172,11 +196,13 @@ namespace NonogramApp.Views
             }
         }
 
+        // Generates the clues for each row and column based on the solution
         private void GenerateClues()
         {
             rowClues = new();
             colClues = new();
 
+            // Row clues: count runs of filled cells
             for (int row = 0; row < gridSize; row++)
             {
                 List<int> clues = new();
@@ -199,6 +225,7 @@ namespace NonogramApp.Views
                 rowClues.Add(clues);
             }
 
+            // Column clues: same as above, but for columns
             for (int col = 0; col < gridSize; col++)
             {
                 List<int> clues = new();
@@ -222,17 +249,18 @@ namespace NonogramApp.Views
             }
         }
 
+        // Draws the grid, clues, and all highlights
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
             Pen gridPen = new(Color.FromArgb(120, 120, 120));
 
-            // Draw puzzle area background (no outer border)
+            // Draw the background for the puzzle area
             Rectangle puzzleArea = new(clueMargin - 4, clueMargin - 4, gridSize * cellSize + 8, gridSize * cellSize + 8);
             g.FillRectangle(new SolidBrush(Color.White), puzzleArea);
 
-            // Draw cells with updated responsive positions and sizes
+            // Draw each cell in the grid
             for (int row = 0; row < gridSize; row++)
             {
                 for (int col = 0; col < gridSize; col++)
@@ -240,16 +268,17 @@ namespace NonogramApp.Views
                     int x = clueMargin + col * cellSize + 1;
                     int y = clueMargin + row * cellSize + 1;
 
+                    // If solution overlay is on, show the solution, else show the user's state
                     int state = showSolutionOverlay ? solution[row][col] : cellStates[col, row];
 
-                    // Highlight selected cell for keyboard navigation
+                    // Draw an orange border if this cell is selected (for keyboard navigation)
                     if (row == selectedRow && col == selectedCol)
                     {
                         Rectangle selRect = new(x - 2, y - 2, cellSize + 3, cellSize + 3);
                         g.DrawRectangle(new Pen(Color.Orange, 3), selRect);
                     }
 
-                    // Draw wrong cells with a strong red highlight
+                    // Wrong cells are red, correct cells are green
                     if (wrongCells.Contains((col, row)))
                     {
                         Rectangle rect = new(x, y, cellSize - 1, cellSize - 1);
@@ -260,7 +289,6 @@ namespace NonogramApp.Views
                         }
                         continue;
                     }
-                    // Draw correct cells with a green highlight
                     else if (correctCells.Contains((col, row)))
                     {
                         Rectangle rect = new(x, y, cellSize - 1, cellSize - 1);
@@ -272,7 +300,7 @@ namespace NonogramApp.Views
                         continue;
                     }
 
-                    // Draw filled cell (black)
+                    // Draw filled cells as black squares
                     if (state == 1)
                     {
                         Rectangle rect = new(x, y, cellSize - 1, cellSize - 1);
@@ -282,7 +310,7 @@ namespace NonogramApp.Views
                             g.DrawRectangle(whitePen, rect);
                         }
                     }
-                    // Draw X mark for marked cell
+                    // Draw X for marked cells
                     else if (state == 2)
                     {
                         using (Pen xPen = new(Color.Crimson, 2))
@@ -294,7 +322,7 @@ namespace NonogramApp.Views
                 }
             }
 
-            // Draw vertical and horizontal grid lines dynamically
+            // Draw the grid lines
             for (int i = 0; i <= gridSize; i++)
             {
                 g.DrawLine(gridPen,
@@ -306,7 +334,7 @@ namespace NonogramApp.Views
                     clueMargin + gridSize * cellSize, clueMargin + i * cellSize);
             }
 
-            // Draw row clues with responsive spacing
+            // Draw the clues for each row
             for (int row = 0; row < gridSize; row++)
             {
                 if (row < rowClues.Count)
@@ -320,9 +348,11 @@ namespace NonogramApp.Views
                 }
             }
 
+            // Draw the clues for each column
             DrawColumnClues(g);
         }
 
+        // Draws the clues above each column
         private void DrawColumnClues(Graphics g)
         {
             int lineHeight = (int)g.MeasureString("A", this.Font).Height;
@@ -346,7 +376,7 @@ namespace NonogramApp.Views
             }
         }
 
-        // Mouse click toggles cell states in order: 0 -> 1 -> 2 -> 0
+        // Handles mouse clicks to toggle cell state (empty -> filled -> X -> empty)
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
@@ -354,6 +384,7 @@ namespace NonogramApp.Views
             int mouseX = e.X;
             int mouseY = e.Y;
 
+            // Only allow clicks inside the puzzle area
             if (mouseX < clueMargin || mouseX > this.ClientSize.Width - 180 || mouseY < clueMargin)
                 return;
 
@@ -365,6 +396,14 @@ namespace NonogramApp.Views
                 if (showSolutionOverlay)
                     return;
 
+                // Don't let user change cells that were filled by a hint
+                if (hintedCells.Contains((col, row)))
+                {
+                    cellStates[col, row] = 1;
+                    Invalidate();
+                    return;
+                }
+
                 int currentState = cellStates[col, row];
                 int newState = (currentState + 1) % 3;
                 cellStates[col, row] = newState;
@@ -372,28 +411,16 @@ namespace NonogramApp.Views
                 selectedRow = row;
                 selectedCol = col;
 
-                // If a cell is filled by hint, don't allow user to change it
-                if (hintedCells.Contains((col, row)))
+                // Update score for user actions (not hints)
+                if (scoreEnabled)
                 {
-                    cellStates[col, row] = 1;
-                }
-                else if (scoreEnabled)
-                {
-                    // Only update score for user actions, not hints
                     if (newState == 1 && solution[row][col] == 1)
                     {
                         score++;
                         lblScore.Text = $"Score: {score:N0}";
                     }
-                    else if (currentState == 1 && newState == 2 && solution[row][col] == 1)
+                    else if (currentState == 1 && (newState == 2 || newState == 0) && solution[row][col] == 1)
                     {
-                        // If user un-fills a correct cell, decrement score
-                        score = Math.Max(0, score - 1);
-                        lblScore.Text = $"Score: {score:N0}";
-                    }
-                    else if (currentState == 1 && newState == 0 && solution[row][col] == 1)
-                    {
-                        // If user un-fills a correct cell, decrement score
                         score = Math.Max(0, score - 1);
                         lblScore.Text = $"Score: {score:N0}";
                     }
@@ -406,7 +433,7 @@ namespace NonogramApp.Views
             }
         }
 
-        // Keyboard navigation for accessibility
+        // Handles keyboard navigation and toggling cells (arrows, space, enter)
         private void PuzzleForm_KeyDown(object? sender, KeyEventArgs e)
         {
             if (showSolutionOverlay) return;
@@ -435,15 +462,17 @@ namespace NonogramApp.Views
                     break;
                 case Keys.Space:
                 case Keys.Enter:
-                    int currentState = cellStates[selectedCol, selectedRow];
-                    int newState = (currentState + 1) % 3;
-                    cellStates[selectedCol, selectedRow] = newState;
-                    // If a cell is filled by hint, don't allow user to change it
+                    // Don't let user change cells that were filled by a hint
                     if (hintedCells.Contains((selectedCol, selectedRow)))
                     {
                         cellStates[selectedCol, selectedRow] = 1;
+                        Invalidate();
+                        return;
                     }
-                    else if (scoreEnabled)
+                    int currentState = cellStates[selectedCol, selectedRow];
+                    int newState = (currentState + 1) % 3;
+                    cellStates[selectedCol, selectedRow] = newState;
+                    if (scoreEnabled)
                     {
                         if (newState == 1 && solution[selectedRow][selectedCol] == 1)
                         {
@@ -463,6 +492,7 @@ namespace NonogramApp.Views
             Invalidate();
         }
 
+        // Show or hide the settings panel when the settings button is clicked
         private void BtnSettings_Click(object? sender, EventArgs e)
         {
             settingsPanel.Visible = !settingsPanel.Visible;
@@ -470,6 +500,7 @@ namespace NonogramApp.Views
                 settingsPanel.BringToFront();
         }
 
+        // Checks if the puzzle is solved, and calculates the score
         private void CheckSolution()
         {
             wrongCells.Clear();
@@ -491,6 +522,7 @@ namespace NonogramApp.Views
                     else if (cellStates[col, row] == 1 && solution[row][col] == 1)
                     {
                         correctCells.Add((col, row));
+                        // Only count for points if not filled by hint
                         if (!hintedCells.Contains((col, row)))
                             userCorrectCells++;
                     }
@@ -508,6 +540,7 @@ namespace NonogramApp.Views
                 gameTimer.Stop();
                 if (scoreEnabled)
                 {
+                    // Score is based on correct cells, speed, hints, and a perfect bonus
                     int basePoints = userCorrectCells * 100;
                     int speedBonus = Math.Max(0, 100_000 - (elapsedSeconds * gridSize * 100));
                     int hintPenalty = hintsUsed * 2500;
@@ -530,6 +563,7 @@ namespace NonogramApp.Views
             }
         }
 
+        // Fills the next correct cell with a hint (if available)
         private void btnHint_Click(object sender, EventArgs e)
         {
             if (!hintsEnabled)
@@ -558,11 +592,13 @@ namespace NonogramApp.Views
             MessageBox.Show("No more hints available!", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        // Not used, but could be used for a tooltip on the timer
         private void lblTimer_Click(object sender, EventArgs e)
         {
-            // You could show a tooltip or do nothing
+            // Not used
         }
 
+        // Hides the mistake highlights
         private void btnHideMistakes_Click(object sender, EventArgs e)
         {
             wrongCells.Clear();
@@ -570,11 +606,13 @@ namespace NonogramApp.Views
             Invalidate();
         }
 
+        // Removes focus from controls when the form loads
         private void PuzzleForm_Load_1(object sender, EventArgs e)
         {
             this.ActiveControl = null;
         }
 
+        // Checks the solution when the check button is clicked
         private void btnCheckSolution_Click(object sender, EventArgs e)
         {
             if (showSolutionOverlay)
@@ -585,12 +623,14 @@ namespace NonogramApp.Views
             CheckSolution();
         }
 
+        // Shows the solution overlay
         private void btnShowSolution_Click(object sender, EventArgs e)
         {
             showSolutionOverlay = true;
             Invalidate();
         }
 
+        // Resets the puzzle and all game state
         private void btnReset_Click(object sender, EventArgs e)
         {
             for (int col = 0; col < gridSize; col++)
@@ -612,7 +652,7 @@ namespace NonogramApp.Views
             selectedRow = -1;
             selectedCol = -1;
 
-            // Make checkboxes unchecked and enabled after reset
+            // Reset checkboxes and hint button
             scoreEnabled = false;
             hintsEnabled = false;
             chkEnableScore.Checked = false;
