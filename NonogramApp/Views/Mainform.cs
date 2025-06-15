@@ -1,48 +1,57 @@
-using NonogramApp.Views;
-using System;
-using System.Windows.Forms;
+using NonogramApp.Views; // Zorg dat dit klopt met jouw mapstructuur
 
 namespace NonogramApp
 {
     public partial class Form1 : Form
     {
-        private int selectedGridSize;
-
         public Form1()
         {
             InitializeComponent();
-
-            // Add options to the combobox
-            cmbDifficulty.Items.Clear();
-            cmbDifficulty.Items.Add("Easy (5x5)");
-            cmbDifficulty.Items.Add("Medium (10x10)");
-            cmbDifficulty.Items.Add("Hard (15x15)");
-
-            // Set default selected index
-            cmbDifficulty.SelectedIndex = 1; // Medium as default
         }
 
-        private void btnStartPuzzle_Click(object sender, EventArgs e)
+        private void title1_Click(object sender, EventArgs e)
         {
-            string? difficulty = cmbDifficulty.SelectedItem?.ToString();
-
-            if (difficulty == "Easy (5x5)")
-                selectedGridSize = 5;
-            else if (difficulty == "Medium (10x10)")
-                selectedGridSize = 10;
-            else if (difficulty == "Hard (15x15)")
-                selectedGridSize = 15;
-            else
-                selectedGridSize = 10; // fallback
-
-            // Create a new PuzzleForm with the selected grid size and show it
-            PuzzleForm puzzleForm = new PuzzleForm(selectedGridSize);
-            puzzleForm.Show();
+            // Title clicked - no action
         }
 
-        private void cmbDifficulty_SelectedIndexChanged(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            // Optional: do something when the user selects a different difficulty
+            // Open ChoosePuzzleForm
+            this.Hide(); // Hide MainForm
+            ChoosePuzzleForm choosePuzzleForm = new ChoosePuzzleForm();
+            choosePuzzleForm.FormClosed += (s, args) => this.Show(); // Show MainForm again when ChoosePuzzleForm closes
+            choosePuzzleForm.Show();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            // Continue puzzle (nog te implementeren)
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            // Open settings (nog te implementeren)
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            // Exit app
+            this.Close();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            // Profile picture click (nog te implementeren)
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // Optional extra knop
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // Form load
         }
     }
 }
