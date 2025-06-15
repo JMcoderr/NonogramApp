@@ -46,7 +46,7 @@ namespace NonogramApp
         {
             // Go to login form
             this.Hide(); // Hide MainForm
-            Loginform loginForm = new Loginform();
+            Loginform loginForm = new Loginform(this);
 
             loginForm.FormClosed += (s, args) => this.Show(); // Show MainForm again when LoginForm closes
             loginForm.Show();
@@ -54,7 +54,12 @@ namespace NonogramApp
 
         private void button6_Click(object sender, EventArgs e)
         {
+            // Go to register form
+            this.Hide(); // Hide MainForm
+            Register registerFrom = new Register();
 
+            registerFrom.FormClosed += (s, args) => this.Show(); // Show MainForm again when LoginForm closes
+            registerFrom.Show();
         }
     }
 }
