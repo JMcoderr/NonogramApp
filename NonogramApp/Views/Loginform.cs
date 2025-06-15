@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using NonogramApp.Models;
 using NonogramApp.Data;
-using static System.Collections.Specialized.BitVector32;
+using NonogramApp.Utility;
 
 
 namespace NonogramApp.Views
@@ -72,7 +72,7 @@ namespace NonogramApp.Views
 
             // check if password matches username
             User user = DataManager.GetUserByUsername(username);
-            string enteredHash = ComputeSha256Hash(password);
+            string enteredHash = Hash.PassHasher(password).ToString();
 
             if (user.Password != enteredHash)
             {
@@ -88,16 +88,6 @@ namespace NonogramApp.Views
             // Proceed to next form or main app window
             _mainForm.Show();
             this.Hide();
-        }
-
-        // hash method
-        private string ComputeSha256Hash(string rawData)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                return Convert.ToBase64String(bytes);
-            }
         }
     }
 }
