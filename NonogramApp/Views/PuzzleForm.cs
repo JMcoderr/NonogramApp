@@ -19,6 +19,7 @@ namespace NonogramApp.Views
         private HashSet<(int x, int y)> wrongCells = new();   // Cells the user filled wrong
         private HashSet<(int x, int y)> correctCells = new(); // Cells the user filled right
         private HashSet<(int x, int y)> hintedCells = new();  // Cells filled by using a hint
+        private HashSet<(int x, int y)> scoredCells = new();  // Tracks which correct cells have been scored
 
         // Clues for the puzzle 
         private List<List<int>> rowClues = new(); // Clues for each row
@@ -84,14 +85,19 @@ namespace NonogramApp.Views
             SetToolTips();
             AddButtonHoverEffects();
 
-            // By default, scoring and hints are off but user can enable them
-            chkEnableScore.Checked = false;
+            // By default, scoring and hints are ON (change this!)
+            scoreEnabled = true;
+            chkEnableScore.Checked = true;
             chkEnableScore.Enabled = true;
             chkAllowHints.Checked = false;
             chkAllowHints.Enabled = true;
-            scoreEnabled = false;
             hintsEnabled = false;
             btnHint.Enabled = false;
+
+            // Always show the score label at start
+            UpdateScoreLabel();
+
+            scoredCells.Clear();
         }
 
         // Adds tooltips to the buttons so the user knows what they do
@@ -135,14 +141,7 @@ namespace NonogramApp.Views
             chkEnableScore.CheckedChanged += (s, e) =>
             {
                 scoreEnabled = chkEnableScore.Checked;
-                if (!scoreEnabled)
-                {
-                    lblScore.Text = "Score: 0";
-                }
-                else
-                {
-                    lblScore.Text = $"Score: {score}";
-                }
+                UpdateScoreLabel(); // Always recalculate and update the score label
             };
 
             // When the hints checkbox is changed, enable or disable the hint button
@@ -419,27 +418,24 @@ namespace NonogramApp.Views
                 selectedRow = row;
                 selectedCol = col;
 
-                // Only give points if the cell was not filled by a hint
-                if (scoreEnabled && !hintedCells.Contains((col, row)))
-                {
-                    if (newState == 1 && solution[row][col] == 1)
-                    {
-                        score++;
-                    }
-                    else if (currentState == 1 && (newState == 2 || newState == 0) && solution[row][col] == 1)
-                    {
-                        score = Math.Max(0, score - 1);
-                    }
-                    lblScore.Text = $"Score: {score:N0}";
-                }
-
-                Invalidate();
-
                 wrongCells.Remove((col, row));
                 correctCells.Remove((col, row));
-                // Do NOT remove from hintedCells here!
 
-                UpdateScoreLabel(); // Always update the score label after a cell change
+                // Score logic: only add score if this is a new correct cell
+                if (scoreEnabled && newState == 1 && solution[row][col] == 1 && !hintedCells.Contains((col, row)) && !scoredCells.Contains((col, row)))
+                {
+                    scoredCells.Add((col, row));
+                    score += 100;
+                }
+                // If user removes a correct cell, remove from scoredCells and update score
+                else if (scoreEnabled && currentState == 1 && newState != 1 && solution[row][col] == 1 && scoredCells.Contains((col, row)))
+                {
+                    scoredCells.Remove((col, row));
+                    score = Math.Max(0, score - 100);
+                }
+
+                UpdateScoreLabel();
+                Invalidate();
             }
         }
 
@@ -482,23 +478,23 @@ namespace NonogramApp.Views
                     int currentState = cellStates[selectedCol, selectedRow];
                     int newState = (currentState + 1) % 3;
                     cellStates[selectedCol, selectedRow] = newState;
-                    // Only give points if the cell was not filled by a hint
-                    if (scoreEnabled && !hintedCells.Contains((selectedCol, selectedRow)))
-                    {
-                        if (newState == 1 && solution[selectedRow][selectedCol] == 1)
-                        {
-                            score++;
-                        }
-                        else if (currentState == 1 && (newState == 2 || newState == 0) && solution[selectedRow][selectedCol] == 1)
-                        {
-                            score = Math.Max(0, score - 1);
-                        }
-                        lblScore.Text = $"Score: {score:N0}";
-                    }
                     wrongCells.Remove((selectedCol, selectedRow));
                     correctCells.Remove((selectedCol, selectedRow));
-                    // Do NOT remove from hintedCells here!
-                    UpdateScoreLabel(); // Always update the score label after a cell change
+
+                    // Score logic: only add score if this is a new correct cell
+                    if (scoreEnabled && newState == 1 && solution[selectedRow][selectedCol] == 1 && !hintedCells.Contains((selectedCol, selectedRow)) && !scoredCells.Contains((selectedCol, selectedRow)))
+                    {
+                        scoredCells.Add((selectedCol, selectedRow));
+                        score += 100;
+                    }
+                    // If user removes a correct cell, remove from scoredCells and update score
+                    else if (scoreEnabled && currentState == 1 && newState != 1 && solution[selectedRow][selectedCol] == 1 && scoredCells.Contains((selectedCol, selectedRow)))
+                    {
+                        scoredCells.Remove((selectedCol, selectedRow));
+                        score = Math.Max(0, score - 100);
+                    }
+
+                    UpdateScoreLabel();
                     break;
             }
             Invalidate();
@@ -538,25 +534,19 @@ namespace NonogramApp.Views
             }
 
             // Always update the score to match the calculated value
-            if (scoreEnabled)
-            {
-                int basePoints = userCorrectCells * 100;
-                int speedBonus = Math.Max(0, 100_000 - (elapsedSeconds * gridSize * 100));
-                int hintPenalty = hintsUsed * 2500;
-                int perfectBonus = (hintsUsed == 0 && userMistakes == 0) ? 10_000 : 0;
-                score = Math.Max(0, basePoints + speedBonus + perfectBonus - hintPenalty);
-                lblScore.Text = $"Score: {score:N0}";
-            }
-            else
-            {
-                score = 0;
-                lblScore.Text = "Score: 0";
-            }
+            UpdateScoreLabel();
 
             Invalidate();
 
             if (allCorrect)
             {
+                // Add perfect bonus if no hints and no mistakes
+                if (hintsUsed == 0 && userMistakes == 0)
+                {
+                    score += 10_000;
+                    UpdateScoreLabel();
+                }
+
                 gameTimer.Stop();
                 MessageBox.Show(
                     $"🎉 Puzzle solved! 🎉\n\n" +
@@ -592,6 +582,7 @@ namespace NonogramApp.Views
                         selectedRow = row;
                         selectedCol = col;
                         Invalidate();
+                        UpdateScoreLabel();
                         return;
                     }
                 }
@@ -647,11 +638,11 @@ namespace NonogramApp.Views
             wrongCells.Clear();
             correctCells.Clear();
             hintedCells.Clear();
+            scoredCells.Clear();
 
             elapsedSeconds = 0;
             score = 0;
             hintsUsed = 0;
-            lblScore.Text = $"Score: {score:N0}";
             lblHintsUsed.Text = "Hints used: 0";
             lblTimer.Text = "Time: 00:00";
 
@@ -670,6 +661,7 @@ namespace NonogramApp.Views
 
             Invalidate();
             gameTimer.Start();
+            UpdateScoreLabel();
         }
 
         // Handles the Back to Menu button click
@@ -685,37 +677,12 @@ namespace NonogramApp.Views
         // Recalculates the score and updates the label, but does not show a message box
         private void UpdateScoreLabel()
         {
-            int userCorrectCells = 0;
-            int userMistakes = 0;
-            for (int col = 0; col < gridSize; col++)
-            {
-                for (int row = 0; row < gridSize; row++)
-                {
-                    if (cellStates[col, row] == 1 && solution[row][col] != 1)
-                    {
-                        userMistakes++;
-                    }
-                    else if (cellStates[col, row] == 1 && solution[row][col] == 1)
-                    {
-                        // Only count for points if not filled by hint
-                        if (!hintedCells.Contains((col, row)))
-                            userCorrectCells++;
-                    }
-                }
-            }
-
             if (scoreEnabled)
             {
-                int basePoints = userCorrectCells * 100;
-                int speedBonus = Math.Max(0, 100_000 - (elapsedSeconds * gridSize * 100));
-                int hintPenalty = hintsUsed * 2500;
-                int perfectBonus = (hintsUsed == 0 && userMistakes == 0) ? 10_000 : 0;
-                score = Math.Max(0, basePoints + speedBonus + perfectBonus - hintPenalty);
                 lblScore.Text = $"Score: {score:N0}";
             }
             else
             {
-                score = 0;
                 lblScore.Text = "Score: 0";
             }
         }
