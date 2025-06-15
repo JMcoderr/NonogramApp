@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestData\testusers.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TestData\testusers.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="MSTest" Version="3.6.4" />
   </ItemGroup>
@@ -17,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Integration\" />
     <Folder Include="Acceptance\" />
 	<Folder Include="Unit\" />
   </ItemGroup>
