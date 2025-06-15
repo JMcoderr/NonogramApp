@@ -33,6 +33,7 @@
             chkAllowHints = new CheckBox();
             rightPanel = new Panel();
             lblHintsUsed = new Label();
+            btnBackToMenu = new Button();
 
             SuspendLayout();
 
@@ -192,6 +193,18 @@
             btnReset.TabIndex = 6;
             btnReset.Click += btnReset_Click;
 
+            // Back to Menu button
+            btnBackToMenu.BackColor = System.Drawing.Color.FromArgb(200, 200, 200);
+            btnBackToMenu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnBackToMenu.FlatAppearance.BorderSize = 0;
+            btnBackToMenu.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            btnBackToMenu.ForeColor = System.Drawing.Color.FromArgb(60, 60, 60);
+            btnBackToMenu.Location = new System.Drawing.Point(20, buttonStartY + buttonSpacing * 5);
+            btnBackToMenu.Size = new System.Drawing.Size(140, 40);
+            btnBackToMenu.Text = "Back to Menu";
+            btnBackToMenu.TabIndex = 7;
+            btnBackToMenu.Click += btnBackToMenu_Click;
+
             // Add everything to the right panel
             rightPanel.Controls.Add(lblTimer);
             rightPanel.Controls.Add(lblScore);
@@ -203,6 +216,7 @@
             rightPanel.Controls.Add(btnHint);
             rightPanel.Controls.Add(btnHideMistakes);
             rightPanel.Controls.Add(btnReset);
+            rightPanel.Controls.Add(btnBackToMenu);
 
             // Add the right panel to the form
             Controls.Add(rightPanel);
@@ -227,5 +241,6 @@
         private CheckBox chkAllowHints;
         private Panel rightPanel;
         private Label lblHintsUsed;
+        private Button btnBackToMenu;
     }
 }
