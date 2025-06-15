@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using NonogramApp.Models;
 using NonogramApp.Data;
+using NonogramApp.Utility;
 
 namespace NonogramApp.Views
 {
@@ -66,7 +67,7 @@ namespace NonogramApp.Views
             }
 
             // password hash
-            string passwordHash = ComputeSha256Hash(password);
+            string passwordHash = Hash.PassHasher(password).ToString();
 
             // create new user
             User newUser = new User
@@ -89,15 +90,6 @@ namespace NonogramApp.Views
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
-        }
-        // hash method
-        private string ComputeSha256Hash(string rawData)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                return Convert.ToBase64String(bytes);
-            }
         }
     }
 }
