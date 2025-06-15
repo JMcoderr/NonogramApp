@@ -132,6 +132,7 @@
             Controls.Add(btnCheckSolution);
             Name = "PuzzleForm";
             Text = "PuzzleForm";
+            Load += PuzzleForm_Load_1;
             ResumeLayout(false);
             PerformLayout();
         }

@@ -434,5 +434,10 @@ namespace NonogramApp.Views
         {
 
         }
+
+        private void PuzzleForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
