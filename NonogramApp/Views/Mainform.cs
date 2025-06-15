@@ -1,4 +1,4 @@
-using NonogramApp.Views; // Zorg dat dit klopt met jouw mapstructuur
+using NonogramApp.Views;
 
 namespace NonogramApp
 {
@@ -11,47 +11,57 @@ namespace NonogramApp
 
         private void title1_Click(object sender, EventArgs e)
         {
-            // Title clicked - no action
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Open ChoosePuzzleForm
-            this.Hide(); // Hide MainForm
+            this.Hide(); // Hide menu
+
             ChoosePuzzleForm choosePuzzleForm = new ChoosePuzzleForm();
-            choosePuzzleForm.FormClosed += (s, args) => this.Show(); // Show MainForm again when ChoosePuzzleForm closes
+
+            choosePuzzleForm.FormClosed += (s, args) => this.Show(); // Show menu again when ChoosePuzzleForm closes
             choosePuzzleForm.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Continue puzzle (nog te implementeren)
+
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            // Open settings (nog te implementeren)
+
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            // Exit app
             this.Close();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            // Profile picture click (nog te implementeren)
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            // Go to login form
+            this.Hide(); // Hide MainForm
+            Loginform loginForm = new Loginform(this);
+
+            loginForm.FormClosed += (s, args) => this.Show(); // Show MainForm again when LoginForm closes
+            loginForm.Show();
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            // Optional extra knop
-        }
+            // Go to register form
+            this.Hide(); // Hide MainForm
+            Register registerFrom = new Register();
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            // Form load
+            registerFrom.FormClosed += (s, args) => this.Show(); // Show MainForm again when LoginForm closes
+            registerFrom.Show();
         }
     }
 }
