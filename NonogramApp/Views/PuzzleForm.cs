@@ -36,6 +36,7 @@ namespace NonogramApp.Views
         private int selectedRow = -1;             // For keyboard navigation: which row is selected
         private int selectedCol = -1;             // For keyboard navigation: which column is selected
         private int hintsUsed = 0;                // How many hints the player has used
+        private bool hasCheckedAndFailed = false;
 
         // Constructor: sets up the form and puzzle 
         public PuzzleForm(int gridSize)
@@ -488,7 +489,7 @@ namespace NonogramApp.Views
 
             if (allCorrect)
             {
-                if (hintsUsed == 0)
+                if (hintsUsed == 0 && !hasCheckedAndFailed)
                 {
                     score += 10_000;
                     UpdateScoreLabel();
@@ -500,9 +501,14 @@ namespace NonogramApp.Views
                     $"Score: {score:N0}\n" +
                     $"Time: {elapsedSeconds / 60:D2}:{elapsedSeconds % 60:D2}\n" +
                     $"Hints used: {hintsUsed}\n" +
-                    (hintsUsed == 0 ? "Perfect Bonus: +10,000!" : ""),
+                    ((hintsUsed == 0 && !hasCheckedAndFailed) ? "Perfect Bonus: +10,000!" : ""),
                     "Success"
                 );
+
+                if (NonogramApp.Data.DBManager.IsUserLoggedIn())
+                {
+                    NonogramApp.Data.DBManager.AddScoreToCurrentUser(score);
+                }
 
                 // Go back to menu after solving
                 this.Hide();
@@ -575,9 +581,10 @@ namespace NonogramApp.Views
             bool wasSolved = IsUserSolutionValid();
             CheckSolution();
 
-            // If not solved, show a friendly message
+            // If not solved, show a friendly message and set the flag
             if (!wasSolved)
             {
+                hasCheckedAndFailed = true;
                 MessageBox.Show(
                     "🧩 The puzzle is not solved yet!\n\n" +
                     "Keep going, you're getting closer.\n" +
@@ -629,6 +636,7 @@ namespace NonogramApp.Views
             Invalidate();
             gameTimer.Start();
             UpdateScoreLabel();
+            hasCheckedAndFailed = false;
         }
 
         // Handles the Back to Menu button click

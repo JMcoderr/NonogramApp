@@ -11,7 +11,54 @@ namespace NonogramApp.Data
 {
     internal class DBManager
     {
+        // Track the currently logged-in user (null if not logged in)
+        public static User? CurrentUser { get; private set; }
 
+        // Call this after a successful login
+        public static void SetCurrentUser(User user)
+        {
+            CurrentUser = user;
+        }
+
+        // Log out the current user
+        public static void Logout()
+        {
+            CurrentUser = null;
+        }
+
+        // Check if a user is logged in
+        public static bool IsUserLoggedIn()
+        {
+            return CurrentUser != null;
+        }
+
+        // Add score to the current user and save to users.json
+        public static void AddScoreToCurrentUser(int scoreToAdd)
+        {
+            if (CurrentUser == null)
+                return;
+
+            var users = DataManager.LoadUsers();
+            var user = users.FirstOrDefault(u => u.Username == CurrentUser.Username);
+            if (user != null)
+            {
+                user.Score += scoreToAdd;
+                DataManager.SaveUsers(users);
+
+                // Update CurrentUser reference to the new score
+                CurrentUser.Score = user.Score;
+            }
+            else
+            {
+                // Optionally, handle the case where the user is not found
+                System.Windows.Forms.MessageBox.Show(
+                    "User not found in database. Score not saved.",
+                    "Error",
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error
+                );
+            }
+        }
     }
 
     public static class DataManager
@@ -28,10 +75,10 @@ namespace NonogramApp.Data
         public static List<User> LoadUsers()
         {
             if (!File.Exists(FilePath))
-                return new List<User>();
+                return [];
 
             string json = File.ReadAllText(FilePath);
-            return JsonSerializer.Deserialize<List<User>>(json) ?? new List<User>();
+            return JsonSerializer.Deserialize<List<User>>(json) ?? [];
         }
 
         // Save users
@@ -66,7 +113,12 @@ namespace NonogramApp.Data
                 u.Password == password // Replace with Hash(password) if using hashes
             );
 
-            return user != null;
+            if (user != null)
+            {
+                DBManager.SetCurrentUser(user);
+                return true;
+            }
+            return false;
         }
     }
 }
