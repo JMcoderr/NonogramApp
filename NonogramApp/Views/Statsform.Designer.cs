@@ -31,7 +31,6 @@
             components = new System.ComponentModel.Container();
             back = new Button();
             title1 = new Label();
-            myStats = new Label();
             rankings = new Label();
             dataGridViewLeaderboard = new DataGridView();
             usernameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
@@ -69,24 +68,12 @@
             title1.Text = "Statestieken";
             title1.Click += title1_Click;
             // 
-            // myStats
-            // 
-            myStats.AutoSize = true;
-            myStats.Font = new Font("Verdana", 24F, FontStyle.Regular, GraphicsUnit.Pixel);
-            myStats.ForeColor = Color.White;
-            myStats.Location = new Point(152, 110);
-            myStats.Name = "myStats";
-            myStats.Size = new Size(214, 29);
-            myStats.TabIndex = 5;
-            myStats.Text = "Mijn statestieken";
-            myStats.Click += myStats_Click;
-            // 
             // rankings
             // 
             rankings.AutoSize = true;
             rankings.Font = new Font("Verdana", 24F, FontStyle.Regular, GraphicsUnit.Pixel);
             rankings.ForeColor = Color.White;
-            rankings.Location = new Point(877, 110);
+            rankings.Location = new Point(538, 111);
             rankings.Name = "rankings";
             rankings.Size = new Size(116, 29);
             rankings.TabIndex = 6;
@@ -98,7 +85,7 @@
             dataGridViewLeaderboard.AllowUserToAddRows = false;
             dataGridViewLeaderboard.AllowUserToDeleteRows = false;
             dataGridViewLeaderboard.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewLeaderboard.Location = new Point(726, 171);
+            dataGridViewLeaderboard.Location = new Point(390, 165);
             dataGridViewLeaderboard.Name = "dataGridViewLeaderboard";
             dataGridViewLeaderboard.ReadOnly = true;
             dataGridViewLeaderboard.Size = new Size(411, 325);
@@ -130,7 +117,6 @@
             ClientSize = new Size(1184, 636);
             Controls.Add(dataGridViewLeaderboard);
             Controls.Add(rankings);
-            Controls.Add(myStats);
             Controls.Add(title1);
             Controls.Add(back);
             MaximumSize = new Size(1200, 675);
@@ -147,7 +133,6 @@
 
         private Button back;
         private Label title1;
-        private Label myStats;
         private Label rankings;
         private DataGridView dataGridViewLeaderboard;
         private DataGridViewTextBoxColumn usernameDataGridViewTextBoxColumn;
