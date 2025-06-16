@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace NonogramApp.Views
 {
@@ -12,7 +13,7 @@ namespace NonogramApp.Views
         private int gridSize; // How many rows/columns the puzzle has
         private int cellSize; // Size of each cell in pixels
         private int clueMargin; // Space for clues on the top/left
-        private int[,] cellStates; // Stores the state of each cell: 0 = empty, 1 = filled, 2 = X
+        private Cell[,] cellStates; // Stores the state of each cell
         private int[][] solution; // The correct answer for the puzzle
 
         // Tracking cell status 
@@ -47,10 +48,15 @@ namespace NonogramApp.Views
             InitializeSettingsPanelLogic();
 
             this.gridSize = gridSize;
-            cellStates = new int[gridSize, gridSize];
+            cellStates = new Cell[gridSize, gridSize];
             solution = new int[gridSize][];
             for (int i = 0; i < gridSize; i++)
                 solution[i] = new int[gridSize];
+
+            // Here we make sure every cell is an EmptyCell object at the start
+            for (int col = 0; col < gridSize; col++)
+                for (int row = 0; row < gridSize; row++)
+                    cellStates[col, row] = new EmptyCell();
 
             // Set the window size based on the puzzle size
             if (gridSize == 5)
@@ -65,10 +71,9 @@ namespace NonogramApp.Views
             this.MinimumSize = new Size(900, 600);
             this.ActiveControl = null; // No control is focused at start
 
-            // Calculate cell sizes and margins, then make a new puzzle
+            // This will calculate the cell size and margin, then start puzzle generation in a background thread
             CalculateResponsiveSizes();
-            RandomizeSolution();
-            GenerateClues();
+            GeneratePuzzleInBackground();
 
             // Set up the timer for the game
             gameTimer = new System.Windows.Forms.Timer();
@@ -80,12 +85,9 @@ namespace NonogramApp.Views
             this.Resize += PuzzleForm_Resize;
             this.KeyPreview = true;
             this.KeyDown += PuzzleForm_KeyDown;
-
-            // Set up tooltips and button hover effects for better UX
             SetToolTips();
             AddButtonHoverEffects();
 
-            // By default, scoring and hints are ON (change this!)
             scoreEnabled = true;
             chkEnableScore.Checked = true;
             chkEnableScore.Enabled = true;
@@ -227,6 +229,22 @@ namespace NonogramApp.Views
             }
         }
 
+        // Generates the puzzle in the background using a Task (multithreading)
+        private void GeneratePuzzleInBackground()
+        {
+            // This runs puzzle generation on a separate thread so the UI doesn't freeze
+            Task.Run(() =>
+            {
+                RandomizeSolution();
+                GenerateClues();
+                // UI updates must be done on the UI thread, so we use Invoke here
+                this.Invoke(new Action(() =>
+                {
+                    Invalidate();
+                }));
+            });
+        }
+
         // Draws the grid, clues, and all highlights
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -238,7 +256,7 @@ namespace NonogramApp.Views
             Rectangle puzzleArea = new(clueMargin - 4, clueMargin - 4, gridSize * cellSize + 8, gridSize * cellSize + 8);
             g.FillRectangle(new SolidBrush(Color.White), puzzleArea);
 
-            // Draw each cell in the grid
+            // Loop through all cells and draw them
             for (int row = 0; row < gridSize; row++)
             {
                 for (int col = 0; col < gridSize; col++)
@@ -247,7 +265,7 @@ namespace NonogramApp.Views
                     int y = clueMargin + row * cellSize + 1;
 
                     // If solution overlay is on, show the solution, else show the user's state
-                    int state = showSolutionOverlay ? solution[row][col] : cellStates[col, row];
+                    int state = showSolutionOverlay ? solution[row][col] : cellStates[col, row].State;
 
                     // Draw an orange border if this cell is selected (for keyboard navigation)
                     if (row == selectedRow && col == selectedCol)
@@ -377,14 +395,20 @@ namespace NonogramApp.Views
                 // Don't let user change cells that were filled by a hint
                 if (hintedCells.Contains((col, row)))
                 {
-                    cellStates[col, row] = 1;
+                    cellStates[col, row] = new FilledCell();
                     Invalidate();
                     return;
                 }
 
-                int currentState = cellStates[col, row];
+                int currentState = cellStates[col, row].State;
                 int newState = (currentState + 1) % 3;
-                cellStates[col, row] = newState;
+                cellStates[col, row] = newState switch
+                {
+                    0 => new EmptyCell(),
+                    1 => new FilledCell(),
+                    2 => new XCell(),
+                    _ => cellStates[col, row]
+                };
 
                 selectedRow = row;
                 selectedCol = col;
@@ -442,13 +466,19 @@ namespace NonogramApp.Views
                     // Don't let user change cells that were filled by a hint
                     if (hintedCells.Contains((selectedCol, selectedRow)))
                     {
-                        cellStates[selectedCol, selectedRow] = 1;
+                        cellStates[selectedCol, selectedRow] = new FilledCell();
                         Invalidate();
                         return;
                     }
-                    int currentState = cellStates[selectedCol, selectedRow];
+                    int currentState = cellStates[selectedCol, selectedRow].State;
                     int newState = (currentState + 1) % 3;
-                    cellStates[selectedCol, selectedRow] = newState;
+                    cellStates[selectedCol, selectedRow] = newState switch
+                    {
+                        0 => new EmptyCell(),
+                        1 => new FilledCell(),
+                        2 => new XCell(),
+                        _ => cellStates[selectedCol, selectedRow]
+                    };
                     wrongCells.Remove((selectedCol, selectedRow));
                     correctCells.Remove((selectedCol, selectedRow));
 
@@ -479,14 +509,12 @@ namespace NonogramApp.Views
 
             bool allCorrect = IsUserSolutionValid();
 
-            // Optionally, highlight correct/wrong cells as before, or just rely on the clue check
-
             UpdateScoreLabel();
             Invalidate();
 
             if (allCorrect)
             {
-                if (hintsUsed == 0) // You may want to adjust this
+                if (hintsUsed == 0)
                 {
                     score += 10_000;
                     UpdateScoreLabel();
@@ -517,9 +545,9 @@ namespace NonogramApp.Views
                 for (int col = 0; col < gridSize; col++)
                 {
                     // Only fill cells that are not already filled and not filled by a hint
-                    if (cellStates[col, row] != 1 && solution[row][col] == 1 && !hintedCells.Contains((col, row)))
+                    if (cellStates[col, row].State != 1 && solution[row][col] == 1 && !hintedCells.Contains((col, row)))
                     {
-                        cellStates[col, row] = 1;
+                        cellStates[col, row] = new FilledCell();
                         hintedCells.Add((col, row));
                         hintsUsed++;
                         lblHintsUsed.Text = $"Hints used: {hintsUsed}";
@@ -578,7 +606,7 @@ namespace NonogramApp.Views
         {
             for (int col = 0; col < gridSize; col++)
                 for (int row = 0; row < gridSize; row++)
-                    cellStates[col, row] = 0;
+                    cellStates[col, row] = new EmptyCell();
 
             wrongCells.Clear();
             correctCells.Clear();
@@ -657,11 +685,11 @@ namespace NonogramApp.Views
         private bool IsUserSolutionValid()
         {
             // Check rows
-            for (int row = 0; row < gridSize; row++)
+            for (int row = 0; row < gridSize; row++)            
             {
                 int[] userRow = new int[gridSize];
                 for (int col = 0; col < gridSize; col++)
-                    userRow[col] = cellStates[col, row];
+                    userRow[col] = cellStates[col, row].State;
                 var userRuns = GetRuns(userRow);
                 if (!userRuns.SequenceEqual(rowClues[row]))
                     return false;
@@ -671,12 +699,55 @@ namespace NonogramApp.Views
             {
                 int[] userCol = new int[gridSize];
                 for (int row = 0; row < gridSize; row++)
-                    userCol[row] = cellStates[col, row];
+                    userCol[row] = cellStates[col, row].State;
                 var userRuns = GetRuns(userCol);
                 if (!userRuns.SequenceEqual(colClues[col]))
                     return false;
             }
             return true;
         }
+
+        private Cell[,] GetCellObjects()
+        {
+            var cells = new Cell[gridSize, gridSize];
+            for (int col = 0; col < gridSize; col++)
+            {
+                for (int row = 0; row < gridSize; row++)
+                {
+                    switch (cellStates[col, row].State)
+                    {
+                        case 1:
+                            cells[col, row] = new FilledCell();
+                            break;
+                        case 2:
+                            cells[col, row] = new XCell();
+                            break;
+                        default:
+                            cells[col, row] = new EmptyCell();
+                            break;
+                    }
+                }
+            }
+            return cells;
+        }
+    }
+    public abstract class Cell
+    {
+        public abstract int State { get; set; } // 0 = empty, 1 = filled, 2 = X
+    }
+
+    public class EmptyCell : Cell
+    {
+        public override int State { get; set; } = 0;
+    }
+
+    public class FilledCell : Cell
+    {
+        public override int State { get; set; } = 1;
+    }
+
+    public class XCell : Cell
+    {
+        public override int State { get; set; } = 2;
     }
 }
