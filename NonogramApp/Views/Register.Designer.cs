@@ -155,7 +155,6 @@
             login.Size = new Size(153, 15);
             login.TabIndex = 9;
             login.TabStop = true;
-            login.Text = "Al een account? Log in hier!";
             // 
             // Register
             // 
