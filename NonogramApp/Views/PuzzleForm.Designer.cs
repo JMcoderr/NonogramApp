@@ -57,7 +57,7 @@
             lblTimer.Location = new Point(20, 30);
             lblTimer.Size = new Size(140, 35);
             lblTimer.Text = "Time: 00:00";
-            lblTimer.Click += lblTimer_Click;
+            lblTimer.Click += LblTimer_Click;
             lblTimer.TextAlign = ContentAlignment.MiddleLeft;
 
             // Score label
@@ -131,7 +131,7 @@
             btnCheckSolution.Size = new Size(140, 40);
             btnCheckSolution.Text = "Check";
             btnCheckSolution.TabIndex = 1;
-            btnCheckSolution.Click += btnCheckSolution_Click;
+            btnCheckSolution.Click += BtnCheckSolution_Click;
 
             // Show solution button
             btnShowSolution.BackColor = Color.FromArgb(80, 120, 200);
@@ -143,7 +143,7 @@
             btnShowSolution.Size = new Size(140, 40);
             btnShowSolution.Text = "Show Solution";
             btnShowSolution.TabIndex = 2;
-            btnShowSolution.Click += btnShowSolution_Click;
+            btnShowSolution.Click += BtnShowSolution_Click;
 
             // Hint button
             btnHint.BackColor = Color.FromArgb(240, 180, 60);
@@ -155,7 +155,7 @@
             btnHint.Size = new Size(140, 40);
             btnHint.Text = "Hint";
             btnHint.TabIndex = 3;
-            btnHint.Click += btnHint_Click;
+            btnHint.Click += BtnHint_Click;
             btnHint.Enabled = false;
 
             // Hide mistakes button
@@ -168,7 +168,7 @@
             btnHideMistakes.Size = new Size(140, 40);
             btnHideMistakes.Text = "Hide Mistakes";
             btnHideMistakes.TabIndex = 5;
-            btnHideMistakes.Click += btnHideMistakes_Click;
+            btnHideMistakes.Click += BtnHideMistakes_Click;
 
             // Reset button
             btnReset.BackColor = Color.FromArgb(120, 120, 120);
@@ -180,7 +180,7 @@
             btnReset.Size = new Size(140, 40);
             btnReset.Text = "Reset";
             btnReset.TabIndex = 6;
-            btnReset.Click += btnReset_Click;
+            btnReset.Click += BtnReset_Click;
 
             // Back to Menu button
             btnBackToMenu.BackColor = System.Drawing.Color.FromArgb(200, 200, 200);
@@ -192,7 +192,7 @@
             btnBackToMenu.Size = new System.Drawing.Size(140, 40);
             btnBackToMenu.Text = "Back to Menu";
             btnBackToMenu.TabIndex = 7;
-            btnBackToMenu.Click += btnBackToMenu_Click;
+            btnBackToMenu.Click += BtnBackToMenu_Click;
 
             // Add everything to the right panel
             rightPanel.Controls.Add(lblTimer);
