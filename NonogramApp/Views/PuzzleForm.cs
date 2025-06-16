@@ -503,6 +503,12 @@ namespace NonogramApp.Views
                     (hintsUsed == 0 ? "Perfect Bonus: +10,000!" : ""),
                     "Success"
                 );
+
+                // Go back to menu after solving
+                this.Hide();
+                var chooseForm = new NonogramApp.ChoosePuzzleForm();
+                chooseForm.FormClosed += (s, args) => this.Close();
+                chooseForm.Show();
             }
         }
 
