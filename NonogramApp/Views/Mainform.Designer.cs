@@ -21,11 +21,12 @@
             button1 = new Button();
             button2 = new Button();
             button3 = new Button();
-            button4 = new Button();
-            pictureBox1 = new PictureBox();
-            Login = new Button();
-            button6 = new Button();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            quit = new Button();
+            login = new Button();
+            register = new Button();
+            label1 = new Label();
+            logout = new Button();
+            stats = new Button();
             SuspendLayout();
             // 
             // title1
@@ -72,55 +73,77 @@
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
             // 
-            // button4
+            // quit
             // 
-            button4.BackColor = Color.FromArgb(106, 4, 29);
-            button4.FlatAppearance.BorderColor = Color.FromArgb(106, 4, 29);
-            button4.FlatAppearance.BorderSize = 2;
-            button4.FlatStyle = FlatStyle.Flat;
-            button4.Font = new Font("Verdana", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            button4.Location = new Point(520, 490);
-            button4.Name = "button4";
-            button4.Size = new Size(160, 60);
-            button4.TabIndex = 4;
-            button4.Text = "Stop";
-            button4.UseVisualStyleBackColor = false;
-            button4.Click += button4_Click;
+            quit.BackColor = Color.FromArgb(106, 4, 29);
+            quit.FlatAppearance.BorderColor = Color.FromArgb(106, 4, 29);
+            quit.FlatAppearance.BorderSize = 2;
+            quit.FlatStyle = FlatStyle.Flat;
+            quit.Font = new Font("Verdana", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            quit.Location = new Point(520, 490);
+            quit.Name = "quit";
+            quit.Size = new Size(160, 60);
+            quit.TabIndex = 4;
+            quit.Text = "Stop";
+            quit.UseVisualStyleBackColor = false;
+            quit.Click += button4_Click;
             // 
-            // pictureBox1
+            // login
             // 
-            pictureBox1.Image = Properties.Resources.default_avatar;
-            pictureBox1.ImageLocation = "";
-            pictureBox1.Location = new Point(1070, 20);
-            pictureBox1.MaximumSize = new Size(100, 100);
-            pictureBox1.MinimumSize = new Size(100, 100);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(100, 100);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.TabIndex = 5;
-            pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
+            login.Font = new Font("Verdana", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
+            login.Location = new Point(1080, 12);
+            login.Name = "login";
+            login.Size = new Size(90, 30);
+            login.TabIndex = 6;
+            login.Text = "Login";
+            login.UseVisualStyleBackColor = true;
+            login.Click += button5_Click;
             // 
-            // Login
+            // register
             // 
-            Login.Font = new Font("Verdana", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
-            Login.Location = new Point(1080, 140);
-            Login.Name = "Login";
-            Login.Size = new Size(80, 30);
-            Login.TabIndex = 6;
-            Login.Text = "Login";
-            Login.UseVisualStyleBackColor = true;
-            Login.Click += button5_Click;
+            register.Location = new Point(1080, 48);
+            register.Name = "register";
+            register.Size = new Size(90, 30);
+            register.TabIndex = 7;
+            register.Text = "Registreren";
+            register.UseVisualStyleBackColor = true;
+            register.Click += button6_Click;
             // 
-            // button6
+            // label1
             // 
-            button6.Location = new Point(1080, 180);
-            button6.Name = "button6";
-            button6.Size = new Size(80, 30);
-            button6.TabIndex = 7;
-            button6.Text = "button6";
-            button6.UseVisualStyleBackColor = true;
-            button6.Click += button6_Click;
+            label1.AutoSize = true;
+            label1.Font = new Font("Verdana", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            label1.Location = new Point(996, 84);
+            label1.Name = "label1";
+            label1.Size = new Size(58, 18);
+            label1.TabIndex = 8;
+            label1.Text = "label1";
+            label1.Visible = false;
+            label1.Click += label1_Click;
+            // 
+            // logout
+            // 
+            logout.Font = new Font("Verdana", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
+            logout.Location = new Point(1080, 48);
+            logout.Name = "logout";
+            logout.Size = new Size(90, 30);
+            logout.TabIndex = 9;
+            logout.Text = "Logout";
+            logout.UseVisualStyleBackColor = true;
+            logout.Visible = false;
+            logout.Click += logout_Click;
+            // 
+            // stats
+            // 
+            stats.Font = new Font("Verdana", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
+            stats.Location = new Point(1080, 12);
+            stats.Name = "stats";
+            stats.Size = new Size(90, 30);
+            stats.TabIndex = 10;
+            stats.Text = "Statestieken";
+            stats.UseVisualStyleBackColor = true;
+            stats.Visible = false;
+            stats.Click += stats_Click;
             // 
             // Form1
             // 
@@ -129,10 +152,12 @@
             AutoSize = true;
             BackColor = Color.FromArgb(13, 92, 99);
             ClientSize = new Size(1184, 636);
-            Controls.Add(button6);
-            Controls.Add(Login);
-            Controls.Add(pictureBox1);
-            Controls.Add(button4);
+            Controls.Add(stats);
+            Controls.Add(logout);
+            Controls.Add(label1);
+            Controls.Add(register);
+            Controls.Add(login);
+            Controls.Add(quit);
             Controls.Add(button3);
             Controls.Add(button2);
             Controls.Add(button1);
@@ -141,7 +166,6 @@
             MinimumSize = new Size(1200, 675);
             Name = "Form1";
             Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -152,9 +176,11 @@
         private Button button1;
         private Button button2;
         private Button button3;
-        private Button button4;
-        private PictureBox pictureBox1;
-        private Button Login;
-        private Button button6;
+        private Button quit;
+        private Button login;
+        private Button register;
+        private Label label1;
+        private Button logout;
+        private Button stats;
     }
 }

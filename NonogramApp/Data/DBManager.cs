@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.IO;
 using NonogramApp.Models;
 
 namespace NonogramApp.Data
@@ -15,28 +16,32 @@ namespace NonogramApp.Data
 
     public static class DataManager
     {
-        // get users.json
-        private static readonly string path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\Data\users.json"));
+        private static string _path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\Data\users.json"));
 
+        public static string FilePath
+        {
+            get => _path;
+            set => _path = value;
+        }
 
-        //get data from the json
+        // Get data from the JSON
         public static List<User> LoadUsers()
         {
-            if (!File.Exists(path)) 
+            if (!File.Exists(FilePath))
                 return new List<User>();
 
-            string json = File.ReadAllText(path);
+            string json = File.ReadAllText(FilePath);
             return JsonSerializer.Deserialize<List<User>>(json) ?? new List<User>();
         }
 
-        //save users
+        // Save users
         public static void SaveUsers(List<User> users)
         {
             string json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(path, json);
+            File.WriteAllText(FilePath, json);
         }
 
-        // save a new user
+        // Save a new user
         public static void AddUser(User user)
         {
             List<User> users = LoadUsers();
@@ -48,10 +53,20 @@ namespace NonogramApp.Data
             SaveUsers(users);
         }
 
-        //check if username is available
+        // Check if username is available
         public static User? GetUserByUsername(string username)
         {
             return LoadUsers().FirstOrDefault(u => u.Username == username);
+        }
+
+        public static bool Login(string username, string password, out User? user)
+        {
+            user = LoadUsers().FirstOrDefault(u =>
+                u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) &&
+                u.Password == password // Replace with Hash(password) if using hashes
+            );
+
+            return user != null;
         }
     }
 }
