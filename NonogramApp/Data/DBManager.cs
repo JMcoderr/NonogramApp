@@ -58,5 +58,15 @@ namespace NonogramApp.Data
         {
             return LoadUsers().FirstOrDefault(u => u.Username == username);
         }
+
+        public static bool Login(string username, string password, out User? user)
+        {
+            user = LoadUsers().FirstOrDefault(u =>
+                u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) &&
+                u.Password == password // Replace with Hash(password) if using hashes
+            );
+
+            return user != null;
+        }
     }
 }

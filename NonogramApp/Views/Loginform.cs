@@ -81,9 +81,10 @@ namespace NonogramApp.Views
             }
 
             // SUCCESS!
-            //Session.LoggedInUser = user;
-
-            MessageBox.Show("Login successful!");
+            
+            Session.CurrentUser = user;
+            MessageBox.Show($"Welcome, {user.Username}!");
+            _mainForm.UpdateAfterLoginOrLogout(); 
 
             // Proceed to next form or main app window
             _mainForm.Show();

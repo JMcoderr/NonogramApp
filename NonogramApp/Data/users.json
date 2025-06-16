@@ -3,5 +3,15 @@
     "Username": "tester2",
     "Password": "4234786043",
     "Id": 1
+  },
+  {
+    "Username": "tester",
+    "Password": "4234786043",
+    "Id": 2
+  },
+  {
+    "Username": "AbsoluteUnit",
+    "Password": "4234786043",
+    "Id": 3
   }
 ]

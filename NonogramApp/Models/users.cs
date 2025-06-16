@@ -17,4 +17,9 @@ namespace NonogramApp.Models
         public string Password { get; set; }
         public int Id { get; set; }
     }
+
+    public static class Session
+    {
+        public static User CurrentUser { get; set; }
+    }
 }
