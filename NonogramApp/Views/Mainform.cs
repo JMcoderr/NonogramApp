@@ -101,7 +101,7 @@ namespace NonogramApp
             this.Hide(); // Hide MainForm
             Register registerFrom = new Register();
 
-            registerFrom.FormClosed += (s, args) => this.Show(); // Show MainForm again when LoginForm closes
+            registerFrom.FormClosed += (s, args) => this.Show(); // Show MainForm again when RegisterForm closes
             registerFrom.Show();
         }
 
@@ -120,7 +120,11 @@ namespace NonogramApp
 
         private void stats_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            Statsform statsform = new Statsform();
 
+            statsform.FormClosed += (s, args) => this.Show(); // Show MainForm again when StatsForm closes
+            statsform.Show();
         }
     }
 }

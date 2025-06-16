@@ -21,7 +21,7 @@
             button1 = new Button();
             button2 = new Button();
             button3 = new Button();
-            button4 = new Button();
+            quit = new Button();
             login = new Button();
             register = new Button();
             label1 = new Label();
@@ -73,20 +73,20 @@
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
             // 
-            // button4
+            // quit
             // 
-            button4.BackColor = Color.FromArgb(106, 4, 29);
-            button4.FlatAppearance.BorderColor = Color.FromArgb(106, 4, 29);
-            button4.FlatAppearance.BorderSize = 2;
-            button4.FlatStyle = FlatStyle.Flat;
-            button4.Font = new Font("Verdana", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            button4.Location = new Point(520, 490);
-            button4.Name = "button4";
-            button4.Size = new Size(160, 60);
-            button4.TabIndex = 4;
-            button4.Text = "Stop";
-            button4.UseVisualStyleBackColor = false;
-            button4.Click += button4_Click;
+            quit.BackColor = Color.FromArgb(106, 4, 29);
+            quit.FlatAppearance.BorderColor = Color.FromArgb(106, 4, 29);
+            quit.FlatAppearance.BorderSize = 2;
+            quit.FlatStyle = FlatStyle.Flat;
+            quit.Font = new Font("Verdana", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            quit.Location = new Point(520, 490);
+            quit.Name = "quit";
+            quit.Size = new Size(160, 60);
+            quit.TabIndex = 4;
+            quit.Text = "Stop";
+            quit.UseVisualStyleBackColor = false;
+            quit.Click += button4_Click;
             // 
             // login
             // 
@@ -157,7 +157,7 @@
             Controls.Add(label1);
             Controls.Add(register);
             Controls.Add(login);
-            Controls.Add(button4);
+            Controls.Add(quit);
             Controls.Add(button3);
             Controls.Add(button2);
             Controls.Add(button1);
@@ -176,7 +176,7 @@
         private Button button1;
         private Button button2;
         private Button button3;
-        private Button button4;
+        private Button quit;
         private Button login;
         private Button register;
         private Label label1;
