@@ -89,6 +89,7 @@
             password.Size = new Size(300, 27);
             password.TabIndex = 3;
             password.TextChanged += textBox2_TextChanged;
+            password.UseSystemPasswordChar = true;
             // 
             // back
             // 

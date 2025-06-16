@@ -90,6 +90,8 @@
             password.Name = "password";
             password.Size = new Size(300, 27);
             password.TabIndex = 3;
+            password.TextChanged += password_TextChanged;
+            password.UseSystemPasswordChar = true;
             // 
             // label4
             // 
@@ -110,6 +112,7 @@
             confirmPassword.Name = "confirmPassword";
             confirmPassword.Size = new Size(300, 27);
             confirmPassword.TabIndex = 5;
+            confirmPassword.UseSystemPasswordChar= true;
             // 
             // back
             // 
