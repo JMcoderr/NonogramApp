@@ -212,47 +212,18 @@ namespace NonogramApp.Views
             // Row clues: count runs of filled cells
             for (int row = 0; row < gridSize; row++)
             {
-                List<int> clues = new();
-                int count = 0;
-                for (int col = 0; col < gridSize; col++)
-                {
-                    if (solution[row][col] == 1)
-                        count++;
-                    else
-                    {
-                        if (count > 0)
-                        {
-                            clues.Add(count);
-                            count = 0;
-                        }
-                    }
-                }
-                if (count > 0) clues.Add(count);
-                if (clues.Count == 0) clues.Add(0);
-                rowClues.Add(clues);
+                rowClues.Add(GetRuns(solution[row]));
             }
 
             // Column clues: same as above, but for columns
             for (int col = 0; col < gridSize; col++)
             {
-                List<int> clues = new();
-                int count = 0;
+                int[] column = new int[gridSize];
                 for (int row = 0; row < gridSize; row++)
                 {
-                    if (solution[row][col] == 1)
-                        count++;
-                    else
-                    {
-                        if (count > 0)
-                        {
-                            clues.Add(count);
-                            count = 0;
-                        }
-                    }
+                    column[row] = solution[row][col];
                 }
-                if (count > 0) clues.Add(count);
-                if (clues.Count == 0) clues.Add(0);
-                colClues.Add(clues);
+                colClues.Add(GetRuns(column));
             }
         }
 
@@ -506,42 +477,16 @@ namespace NonogramApp.Views
             wrongCells.Clear();
             correctCells.Clear();
 
-            bool allCorrect = true;
-            int userCorrectCells = 0;
-            int userMistakes = 0;
-            for (int col = 0; col < gridSize; col++)
-            {
-                for (int row = 0; row < gridSize; row++)
-                {
-                    if (cellStates[col, row] == 1 && solution[row][col] != 1)
-                    {
-                        wrongCells.Add((col, row));
-                        allCorrect = false;
-                        userMistakes++;
-                    }
-                    else if (cellStates[col, row] == 1 && solution[row][col] == 1)
-                    {
-                        correctCells.Add((col, row));
-                        // Only count for points if not filled by hint
-                        if (!hintedCells.Contains((col, row)))
-                            userCorrectCells++;
-                    }
-                    else if (cellStates[col, row] != 1 && solution[row][col] == 1)
-                    {
-                        allCorrect = false;
-                    }
-                }
-            }
+            bool allCorrect = IsUserSolutionValid();
 
-            // Always update the score to match the calculated value
+            // Optionally, highlight correct/wrong cells as before, or just rely on the clue check
+
             UpdateScoreLabel();
-
             Invalidate();
 
             if (allCorrect)
             {
-                // Add perfect bonus if no hints and no mistakes
-                if (hintsUsed == 0 && userMistakes == 0)
+                if (hintsUsed == 0) // You may want to adjust this
                 {
                     score += 10_000;
                     UpdateScoreLabel();
@@ -553,7 +498,7 @@ namespace NonogramApp.Views
                     $"Score: {score:N0}\n" +
                     $"Time: {elapsedSeconds / 60:D2}:{elapsedSeconds % 60:D2}\n" +
                     $"Hints used: {hintsUsed}\n" +
-                    (hintsUsed == 0 && userMistakes == 0 ? "Perfect Bonus: +10,000!" : ""),
+                    (hintsUsed == 0 ? "Perfect Bonus: +10,000!" : ""),
                     "Success"
                 );
             }
@@ -685,6 +630,53 @@ namespace NonogramApp.Views
             {
                 lblScore.Text = "Score: 0";
             }
+        }
+
+        // Extracts runs of filled cells from a line (row or column)
+        private List<int> GetRuns(int[] line)
+        {
+            List<int> runs = new();
+            int count = 0;
+            foreach (var cell in line)
+            {
+                if (cell == 1)
+                    count++;
+                else if (count > 0)
+                {
+                    runs.Add(count);
+                    count = 0;
+                }
+            }
+            if (count > 0)
+                runs.Add(count);
+            if (runs.Count == 0)
+                runs.Add(0);
+            return runs;
+        }
+
+        private bool IsUserSolutionValid()
+        {
+            // Check rows
+            for (int row = 0; row < gridSize; row++)
+            {
+                int[] userRow = new int[gridSize];
+                for (int col = 0; col < gridSize; col++)
+                    userRow[col] = cellStates[col, row];
+                var userRuns = GetRuns(userRow);
+                if (!userRuns.SequenceEqual(rowClues[row]))
+                    return false;
+            }
+            // Check columns
+            for (int col = 0; col < gridSize; col++)
+            {
+                int[] userCol = new int[gridSize];
+                for (int row = 0; row < gridSize; row++)
+                    userCol[row] = cellStates[col, row];
+                var userRuns = GetRuns(userCol);
+                if (!userRuns.SequenceEqual(colClues[col]))
+                    return false;
+            }
+            return true;
         }
     }
 }
