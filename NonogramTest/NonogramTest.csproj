@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Acceptance\" />
-	<Folder Include="Unit\" />
   </ItemGroup>
 
   <ItemGroup>
